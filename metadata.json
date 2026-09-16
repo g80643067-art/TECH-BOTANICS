@@ -1,0 +1,11 @@
+{
+  "name": "KrishiSetu AI",
+  "description": "Guided AI crop health scanner and farmer advisory journey with multilingual support, location & soil diagnostics, and expert escalation support.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
