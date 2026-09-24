@@ -29,14 +29,14 @@ export const JourneyIndicator: React.FC<JourneyIndicatorProps> = ({
   const t = getTranslation(language);
 
   return (
-    <div className="bg-white border-b border-stone-200 py-2.5 px-4 shadow-2xs">
+    <div className="bg-white border-b border-[#DCE8DD] py-2.5 px-4 shadow-2xs">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-2">
         {/* Back navigation button if available */}
         <div className="flex items-center gap-2">
           {canNavigateBack && currentStep > 1 && (
             <button
               onClick={() => onNavigateStep((currentStep - 1) as StepNumber)}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-600 hover:text-emerald-800 bg-stone-100 hover:bg-emerald-50 px-2.5 py-1 rounded-lg transition-colors border border-stone-200 select-none"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#64748B] hover:text-[#166534] bg-[#F8FAF5] hover:bg-[#DCE8DD]/40 px-2.5 py-1 rounded-lg transition-colors border border-[#DCE8DD] select-none cursor-pointer"
               id="btn-journey-back"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
@@ -44,7 +44,7 @@ export const JourneyIndicator: React.FC<JourneyIndicatorProps> = ({
             </button>
           )}
 
-          <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">
+          <span className="text-xs font-bold text-[#64748B] uppercase tracking-wider">
             {language === "hi" ? "चरण" : "Step"} {currentStep} / 7
           </span>
         </div>
@@ -64,10 +64,10 @@ export const JourneyIndicator: React.FC<JourneyIndicatorProps> = ({
                   onClick={() => isClickable && onNavigateStep(item.step)}
                   className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
                     isCurrent
-                      ? "bg-emerald-800 text-white shadow-xs scale-102 ring-2 ring-emerald-400/40"
+                      ? "bg-[#166534] text-white shadow-xs scale-102 ring-2 ring-[#22C55E]/40"
                       : isCompleted
-                      ? "bg-emerald-50 text-emerald-900 border border-emerald-200/80 hover:bg-emerald-100 cursor-pointer"
-                      : "bg-stone-100 text-stone-400 border border-stone-200/60 cursor-not-allowed opacity-75"
+                      ? "bg-[#F8FAF5] text-[#166534] border border-[#DCE8DD] hover:bg-[#DCE8DD]/50 cursor-pointer"
+                      : "bg-[#F8FAF5]/60 text-[#64748B]/70 border border-[#DCE8DD]/50 cursor-not-allowed opacity-75"
                   }`}
                   id={`step-indicator-${item.step}`}
                   title={`${item.numberIcon} ${stepLabel}`}
@@ -75,10 +75,10 @@ export const JourneyIndicator: React.FC<JourneyIndicatorProps> = ({
                   <span
                     className={`w-4 h-4 rounded-full flex items-center justify-center text-[11px] font-bold ${
                       isCurrent
-                        ? "bg-white text-emerald-900"
+                        ? "bg-white text-[#166534]"
                         : isCompleted
-                        ? "bg-emerald-700 text-white"
-                        : "bg-stone-300 text-stone-600"
+                        ? "bg-[#22C55E] text-white"
+                        : "bg-[#DCE8DD] text-[#64748B]"
                     }`}
                   >
                     {item.step}
@@ -89,7 +89,7 @@ export const JourneyIndicator: React.FC<JourneyIndicatorProps> = ({
                 {index < STEP_KEYS.length - 1 && (
                   <ChevronRight
                     className={`w-3.5 h-3.5 shrink-0 ${
-                      item.step < currentStep ? "text-emerald-600" : "text-stone-300"
+                      item.step < currentStep ? "text-[#22C55E]" : "text-[#DCE8DD]"
                     }`}
                   />
                 )}

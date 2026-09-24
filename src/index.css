@@ -1,1 +1,51 @@
 @import "tailwindcss";
+
+@theme {
+  --color-agri-primary: #166534;
+  --color-agri-primary-hover: #14532d;
+  --color-agri-secondary: #22c55e;
+  --color-agri-secondary-hover: #16a34a;
+  --color-agri-accent: #facc15;
+  --color-agri-accent-hover: #eab308;
+  --color-agri-bg: #f8faf5;
+  --color-agri-card: #ffffff;
+  --color-agri-dark: #163020;
+  --color-agri-muted: #64748b;
+  --color-agri-border: #dce8dd;
+}
+
+:root {
+  --agri-primary: #166534;
+  --agri-secondary: #22c55e;
+  --agri-accent: #facc15;
+  --agri-bg: #f8faf5;
+  --agri-card: #ffffff;
+  --agri-dark: #163020;
+  --agri-muted: #64748b;
+  --agri-border: #dce8dd;
+}
+
+body {
+  background-color: #f8faf5;
+  color: #163020;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbar matching agriculture theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f8faf5;
+}
+::-webkit-scrollbar-thumb {
+  background: #dce8dd;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #22c55e;
+}

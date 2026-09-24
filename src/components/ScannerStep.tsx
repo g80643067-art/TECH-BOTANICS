@@ -2,20 +2,16 @@ import React, { useState, useRef, useEffect } from "react";
 import {
   Camera,
   Upload,
-  Sparkles,
   AlertCircle,
   CheckCircle2,
   X,
   Activity,
-  Bot,
+  MessageSquare,
   RefreshCw,
   ArrowRight,
   HelpCircle,
   Layers,
   Info,
-  ChevronDown,
-  ChevronUp,
-  Cpu,
 } from "lucide-react";
 import {
   CropCandidateOption,
@@ -26,8 +22,16 @@ import {
   VisionAnalysisResult,
 } from "../types";
 import { getTranslation } from "../data/translations";
-import { SAMPLE_CROPS, getLocalizedCropName, getLocalizedIssueName, getLocalizedPossibleCause } from "../data/mockCrops";
+import {
+  SAMPLE_CROPS,
+  getLocalizedCropName,
+  getLocalizedIssueName,
+  getLocalizedPossibleCause,
+  resolveCropIssueData,
+} from "../data/mockCrops";
 import { analyzeCropImage } from "../services/visionAnalysisService";
+import { SynchronizedCropPhoto } from "./SynchronizedCropPhoto";
+import { CropSearchSelector } from "./CropSearchSelector";
 
 interface ScannerStepProps {
   language: Language;
@@ -62,7 +66,6 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [analysisStage, setAnalysisStage] = useState<number>(0);
   const [progressPercent, setProgressPercent] = useState<number>(0);
-  const [showDebugInfo, setShowDebugInfo] = useState<boolean>(false);
 
   // Live Camera stream states
   const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
@@ -208,6 +211,18 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
     }
   };
 
+  // Synchronized crop search and immediate visual photo matching handler
+  const handleSelectSearchCrop = (cropName: string, resolvedUrl: string, sampleCropId?: string) => {
+    let baseCrop: CropIssueData | null = null;
+    if (sampleCropId) {
+      baseCrop = SAMPLE_CROPS.find((c) => c.id === sampleCropId) || null;
+    }
+    if (!baseCrop) {
+      baseCrop = resolveCropIssueData(cropName);
+    }
+    executeVisionAnalysis(resolvedUrl || baseCrop.sampleImage, baseCrop);
+  };
+
   // Reset scanner to scan another crop
   const handleResetScanner = () => {
     setSelectedImage(null);
@@ -227,23 +242,34 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
   return (
     <div className="max-w-4xl mx-auto py-4 sm:py-6 px-3 sm:px-4">
       {/* Main Card */}
-      <div className="bg-white rounded-3xl p-5 sm:p-8 border border-stone-200/80 shadow-lg relative overflow-hidden">
+      <div className="bg-white rounded-3xl p-5 sm:p-8 border border-[#DCE8DD] shadow-sm relative overflow-hidden">
         {/* Header section */}
         <div className="text-center max-w-2xl mx-auto mb-6 sm:mb-8">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-emerald-50 text-emerald-800 border border-emerald-200 mb-2">
-            <Camera className="w-3.5 h-3.5 text-emerald-600" /> {t.steps.step2} • AI Crop Vision
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-[#F8FAF5] text-[#166534] border border-[#DCE8DD] mb-2">
+            <Camera className="w-3.5 h-3.5 text-[#22C55E]" /> {t.steps.step2} • AI Crop Vision
           </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900 tracking-tight mb-2">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#163020] tracking-tight mb-2">
             {t.scanner.title}
           </h2>
-          <p className="text-sm text-stone-600">
+          <p className="text-sm text-[#64748B]">
             {t.scanner.subtitle}
           </p>
         </div>
 
+        {/* Photo Guidance Banner */}
+        <div className="mb-6 p-3.5 sm:p-4 rounded-2xl bg-[#F8FAF5] border border-[#22C55E]/40 flex items-start gap-3 max-w-2xl mx-auto text-left">
+          <div className="w-7 h-7 rounded-xl bg-[#22C55E]/20 text-[#166534] flex items-center justify-center shrink-0 mt-0.5 font-bold text-sm">
+            💡
+          </div>
+          <div className="text-xs sm:text-sm text-[#163020] leading-relaxed">
+            <strong className="text-[#166534] font-bold">फोटो निर्देश: </strong>
+            Clear photo lein — affected leaf ke paas se aur poore paudhe ki ek photo bhejna behtar rahega.
+          </div>
+        </div>
+
         {/* Live Camera Modal / Overlay */}
         {isCameraOpen && (
-          <div className="mb-8 p-4 bg-stone-900 rounded-2xl text-white relative flex flex-col items-center">
+          <div className="mb-8 p-4 bg-[#163020] rounded-2xl text-white relative flex flex-col items-center">
             <button
               onClick={stopCameraStream}
               className="absolute top-3 right-3 p-2 bg-white/20 hover:bg-white/30 rounded-full text-white transition-colors z-20 cursor-pointer"
@@ -259,8 +285,8 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
                 muted
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-8 border-2 border-dashed border-emerald-400/80 rounded-lg pointer-events-none flex items-center justify-center">
-                <div className="text-[11px] bg-emerald-950/80 text-emerald-200 px-3 py-1 rounded-full border border-emerald-500/40">
+              <div className="absolute inset-8 border-2 border-dashed border-[#22C55E]/80 rounded-lg pointer-events-none flex items-center justify-center">
+                <div className="text-[11px] bg-[#163020]/90 text-[#DCE8DD] px-3 py-1 rounded-full border border-[#22C55E]/40">
                   {t.scanner.subtitle}
                 </div>
               </div>
@@ -268,15 +294,15 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
             <div className="mt-4 flex items-center gap-3">
               <button
                 onClick={handleCapturePhoto}
-                className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-bold px-6 py-3 rounded-full shadow-lg transition-transform active:scale-95 cursor-pointer"
+                className="flex items-center gap-2 bg-[#166534] hover:bg-[#14532d] text-white font-bold px-6 py-3 rounded-full shadow-md transition-transform active:scale-95 cursor-pointer"
                 id="btn-capture-leaf-photo"
               >
-                <Camera className="w-5 h-5" />
+                <Camera className="w-5 h-5 text-[#22C55E]" />
                 <span>{t.scanner.captureShot}</span>
               </button>
               <button
                 onClick={stopCameraStream}
-                className="px-4 py-3 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-full text-sm font-semibold transition-colors cursor-pointer"
+                className="px-4 py-3 bg-white/10 hover:bg-white/20 text-[#DCE8DD] rounded-full text-sm font-semibold transition-colors cursor-pointer"
               >
                 {t.scanner.closeCamera}
               </button>
@@ -294,11 +320,11 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
 
         {/* Scanning Animation Modal Overlay */}
         {isAnalyzing && (
-          <div className="mb-8 p-6 sm:p-8 bg-gradient-to-b from-stone-900 to-emerald-950 rounded-2xl text-white shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500 animate-pulse" />
+          <div className="mb-8 p-6 sm:p-8 bg-[#163020] rounded-2xl text-white shadow-xl relative overflow-hidden border border-[#166534]/40">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-[#22C55E] animate-pulse" />
 
             <div className="flex flex-col sm:flex-row items-center gap-6">
-              <div className="relative w-36 h-36 rounded-xl overflow-hidden border-2 border-emerald-400 shadow-md shrink-0 bg-stone-800 flex items-center justify-center">
+              <div className="relative w-36 h-36 rounded-xl overflow-hidden border-2 border-[#22C55E] shadow-md shrink-0 bg-black/40 flex items-center justify-center">
                 {selectedImage && selectedImage.startsWith("data:image/") && !selectedImage.includes("unclear") && !selectedImage.includes("placeholder") ? (
                   <img
                     src={selectedImage}
@@ -308,28 +334,28 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
                 ) : (
                   <div className="text-4xl animate-bounce">🌱</div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-400/30 to-transparent animate-bounce" />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#22C55E]/30 to-transparent animate-bounce" />
               </div>
 
               <div className="flex-1 w-full text-left">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-emerald-400 animate-spin" />
-                    <h3 className="font-bold text-lg text-emerald-300">
+                    <div className="w-4 h-4 rounded-full border-2 border-[#22C55E] border-t-transparent animate-spin" />
+                    <h3 className="font-bold text-lg text-white">
                       {t.scanner.analyzingTitle}
                     </h3>
                   </div>
-                  <span className="font-mono text-xs font-bold text-emerald-400">
+                  <span className="font-mono text-xs font-bold text-[#FACC15]">
                     {progressPercent}%
                   </span>
                 </div>
-                <p className="text-xs text-stone-300 mb-4">
+                <p className="text-xs text-[#DCE8DD]/80 mb-4">
                   {t.scanner.analyzingSubtitle}
                 </p>
 
-                <div className="w-full bg-stone-800 rounded-full h-2.5 mb-5 overflow-hidden border border-white/10">
+                <div className="w-full bg-white/10 rounded-full h-2.5 mb-5 overflow-hidden border border-white/10">
                   <div
-                    className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-300"
+                    className="bg-[#22C55E] h-full rounded-full transition-all duration-300"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
@@ -344,18 +370,18 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
                         key={idx}
                         className={`flex items-center gap-2.5 text-xs transition-opacity duration-200 ${
                           isPassed
-                            ? "text-emerald-300 font-medium"
+                            ? "text-[#22C55E] font-medium"
                             : isCurrent
                             ? "text-white font-bold"
-                            : "text-stone-500"
+                            : "text-[#DCE8DD]/40"
                         }`}
                       >
                         {isPassed ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                          <CheckCircle2 className="w-4 h-4 text-[#22C55E] shrink-0" />
                         ) : isCurrent ? (
-                          <Activity className="w-4 h-4 text-emerald-300 animate-pulse shrink-0" />
+                          <Activity className="w-4 h-4 text-[#FACC15] animate-pulse shrink-0" />
                         ) : (
-                          <div className="w-4 h-4 rounded-full border border-stone-600 shrink-0" />
+                          <div className="w-4 h-4 rounded-full border border-white/20 shrink-0" />
                         )}
                         <span>{stageText}</span>
                       </div>
@@ -373,23 +399,22 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
         {!isAnalyzing && visionResult && visionResult.status === "identified" && visionResult.cropData && (
           <div className="mb-8 space-y-6">
             {/* Top Badge Banner */}
-            <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-2xl">
+            <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-[#F8FAF5] border border-[#DCE8DD] rounded-2xl">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0" />
-                <span className="text-xs sm:text-sm font-black text-emerald-950 uppercase tracking-wide">
+                <CheckCircle2 className="w-5 h-5 text-[#22C55E] shrink-0" />
+                <span className="text-xs sm:text-sm font-black text-[#163020] uppercase tracking-wide">
                   🌱 {t.scanner.cropIdentified}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 {visionResult.analysisSource === "gemini_vision" ? (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-200 text-emerald-900 border border-emerald-400 shadow-xs">
-                    <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping" />
-                    <Sparkles className="w-3 h-3 text-emerald-800" />
-                    Gemini 3.8 Flash Vision AI
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-white text-[#166534] border border-[#DCE8DD] shadow-2xs">
+                    <span className="w-2 h-2 rounded-full bg-[#22C55E] animate-ping" />
+                    Vision AI Analysis
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">
-                    <Info className="w-3 h-3 text-amber-700" />
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#F8FAF5] text-[#163020] border border-[#DCE8DD]">
+                    <Info className="w-3 h-3 text-[#64748B]" />
                     {t.scanner.demoAiDiagnosisBadge}
                   </span>
                 )}
@@ -397,58 +422,53 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
             </div>
 
             {/* Main Result Card */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 p-5 sm:p-6 rounded-2xl border-2 border-emerald-600/30 bg-gradient-to-br from-white via-emerald-50/20 to-teal-50/30 shadow-md">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 p-5 sm:p-6 rounded-2xl border border-[#DCE8DD] bg-white shadow-sm">
               {/* Left Column: Analyzed Image Preview & Botanical Features */}
               <div className="md:col-span-5 space-y-4">
-                <div className="relative rounded-2xl overflow-hidden border-2 border-stone-200 aspect-4/3 bg-stone-900 shadow-inner">
-                  <img
-                    src={selectedImage || visionResult.cropData.sampleImage}
-                    alt={visionResult.cropData.cropName_en}
-                    className="w-full h-full object-cover"
+                <div className="relative">
+                  <SynchronizedCropPhoto
+                    cropName={visionResult.cropData.cropName_hi || visionResult.cropData.cropName_en}
+                    directImageUrl={selectedImage || visionResult.cropData.sampleImage}
+                    aspectRatio="aspect-4/3"
+                    showBadge={true}
+                    showSyncIndicator={false}
+                    language={language}
                   />
-                  <div className="absolute bottom-2 left-2 right-2 bg-stone-950/80 backdrop-blur-xs text-white p-2 rounded-xl text-[11px] flex items-center justify-between">
-                    <span className="font-semibold flex items-center gap-1">
-                      📷 {t.scanner.imageAnalyzed}
-                    </span>
-                    <span className="font-mono text-emerald-300 font-bold">
-                      {visionResult.confidence} ({visionResult.confidenceScore}%)
-                    </span>
-                  </div>
                 </div>
 
                 {/* Botanical Visual Traits Detected */}
-                <div className="p-3.5 bg-white rounded-xl border border-stone-200/90 text-xs space-y-2">
-                  <div className="flex items-center gap-1.5 font-bold text-stone-900 border-b border-stone-100 pb-1.5">
-                    <Layers className="w-3.5 h-3.5 text-emerald-700" />
+                <div className="p-3.5 bg-[#F8FAF5] rounded-xl border border-[#DCE8DD] text-xs space-y-2">
+                  <div className="flex items-center gap-1.5 font-bold text-[#163020] border-b border-[#DCE8DD] pb-1.5">
+                    <Layers className="w-3.5 h-3.5 text-[#166534]" />
                     <span>{t.scanner.visualFeaturesLabel}</span>
                   </div>
-                  <div className="space-y-1.5 text-[11px] text-stone-700 leading-relaxed">
+                  <div className="space-y-1.5 text-[11px] text-[#163020]/80 leading-relaxed">
                     <p>
-                      <strong className="text-stone-900 font-semibold">• {t.scanner.leafShapeLabel}:</strong>{" "}
+                      <strong className="text-[#163020] font-semibold">• {t.scanner.leafShapeLabel}:</strong>{" "}
                       {visionResult.visualFeatures.leafShape}
                     </p>
                     <p>
-                      <strong className="text-stone-900 font-semibold">• {t.scanner.leafArrangementLabel}:</strong>{" "}
+                      <strong className="text-[#163020] font-semibold">• {t.scanner.leafArrangementLabel}:</strong>{" "}
                       {visionResult.visualFeatures.leafArrangement}
                     </p>
                     <p>
-                      <strong className="text-stone-900 font-semibold">• {t.scanner.plantStructureLabel}:</strong>{" "}
+                      <strong className="text-[#163020] font-semibold">• {t.scanner.plantStructureLabel}:</strong>{" "}
                       {visionResult.visualFeatures.plantStructure}
                     </p>
                     {visionResult.visualFeatures.stemCharacteristics && (
                       <p>
-                        <strong className="text-stone-900 font-semibold">• {t.scanner.stemCharacteristicsLabel}:</strong>{" "}
+                        <strong className="text-[#163020] font-semibold">• {t.scanner.stemCharacteristicsLabel}:</strong>{" "}
                         {visionResult.visualFeatures.stemCharacteristics}
                       </p>
                     )}
                     {visionResult.visualFeatures.reproductiveParts && (
                       <p>
-                        <strong className="text-stone-900 font-semibold">• Flowers / Seeds / Pods:</strong>{" "}
+                        <strong className="text-[#163020] font-semibold">• Flowers / Seeds / Pods:</strong>{" "}
                         {visionResult.visualFeatures.reproductiveParts}
                       </p>
                     )}
                     <p>
-                      <strong className="text-stone-900 font-semibold">• {t.scanner.overallAppearanceLabel}:</strong>{" "}
+                      <strong className="text-[#163020] font-semibold">• {t.scanner.overallAppearanceLabel}:</strong>{" "}
                       {visionResult.visualFeatures.overallAppearance}
                     </p>
                   </div>
@@ -459,40 +479,40 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
               <div className="md:col-span-7 flex flex-col justify-between space-y-4">
                 <div>
                   {/* Crop Name & Confidence */}
-                  <div className="flex flex-wrap items-start justify-between gap-2 border-b border-stone-200/80 pb-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2 border-b border-[#DCE8DD] pb-3">
                     <div>
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#166534]">
                         {t.scanner.cropIdentified}
                       </span>
-                      <h3 className="text-2xl font-black text-stone-900 tracking-tight">
+                      <h3 className="text-2xl font-black text-[#163020] tracking-tight">
                         {getLocalizedCropName(visionResult.cropData, language)}
                       </h3>
                       {visionResult.scientificName && (
-                        <p className="text-xs italic text-stone-500">
+                        <p className="text-xs italic text-[#64748B]">
                           {visionResult.scientificName} • {visionResult.category || visionResult.cropData.category}
                         </p>
                       )}
                     </div>
 
                     <div className="text-right">
-                      <span className="text-[10px] font-bold text-stone-500 uppercase block">
+                      <span className="text-[10px] font-bold text-[#64748B] uppercase block">
                         {t.scanner.confidenceLabel}
                       </span>
-                      <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-900 text-xs font-black rounded-lg border border-emerald-300">
+                      <span className="inline-block px-3 py-1 bg-[#F8FAF5] text-[#166534] text-xs font-black rounded-lg border border-[#DCE8DD]">
                         {visionResult.confidence} ({visionResult.confidenceScore}%)
                       </span>
-                      <p className="text-[9px] text-stone-400 mt-0.5">
+                      <p className="text-[9px] text-[#64748B] mt-0.5">
                         {isHi ? "छवि से 100% निश्चितता का दावा नहीं" : "No 100% certainty claimed"}
                       </p>
                     </div>
                   </div>
 
                   {/* Health Issue & Severity */}
-                  <div className="mt-3 p-3.5 bg-white rounded-xl border border-stone-200 space-y-2">
+                  <div className="mt-3 p-3.5 bg-white rounded-xl border border-[#DCE8DD] space-y-2">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-stone-700">🔍 {t.scanner.possibleIssue}:</span>
-                        <span className="text-sm font-extrabold text-stone-900">
+                        <span className="text-xs font-bold text-[#163020]">🔍 {t.scanner.possibleIssue}:</span>
+                        <span className="text-sm font-extrabold text-[#163020]">
                           {getLocalizedIssueName(visionResult.cropData, language)}
                         </span>
                       </div>
@@ -502,26 +522,25 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
                           visionResult.healthSummary.severity === "High"
                             ? "bg-red-50 text-red-800 border-red-200"
                             : visionResult.healthSummary.severity === "Medium"
-                            ? "bg-amber-50 text-amber-800 border-amber-200"
-                            : "bg-emerald-50 text-emerald-800 border-emerald-200"
+                            ? "bg-[#FACC15]/20 text-[#163020] border-[#FACC15]/60"
+                            : "bg-[#F8FAF5] text-[#166534] border-[#DCE8DD]"
                         }`}
                       >
                         {t.scanner.severityLabel}: {visionResult.healthSummary.severity}
                       </span>
                     </div>
 
-                    <p className="text-xs text-stone-600 leading-relaxed">
+                    <p className="text-xs text-[#64748B] leading-relaxed">
                       {getLocalizedPossibleCause(visionResult.cropData, language)}
                     </p>
                   </div>
 
                   {/* Recommended Action Preview */}
-                  <div className="mt-3 p-3.5 bg-emerald-900 text-white rounded-xl shadow-xs space-y-2">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-200">
-                      <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                  <div className="mt-3 p-3.5 bg-[#166534] text-white rounded-xl shadow-2xs space-y-2">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-[#FACC15]">
                       <span>💡 {t.scanner.recommendedAction}</span>
                     </div>
-                    <p className="text-xs text-emerald-50 leading-relaxed">
+                    <p className="text-xs text-white/90 leading-relaxed">
                       {visionResult.recommendedResolution[0]
                         ? isHi
                           ? visionResult.recommendedResolution[0].title_hi || visionResult.recommendedResolution[0].title_en
@@ -546,16 +565,16 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
                         onOpenAiAgent();
                       }
                     }}
-                    className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-stone-900 hover:bg-stone-800 text-white text-xs sm:text-sm font-bold px-4 py-3 rounded-xl shadow-sm transition-colors cursor-pointer"
+                    className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-[#163020] hover:bg-[#163020]/90 text-white text-xs sm:text-sm font-bold px-4 py-3 rounded-xl shadow-xs transition-colors cursor-pointer"
                     id="btn-ask-ai-from-scanner"
                   >
-                    <Bot className="w-4 h-4 text-emerald-400" />
+                    <MessageSquare className="w-4 h-4 text-[#22C55E]" />
                     <span>{t.scanner.askAiAgent}</span>
                   </button>
 
                   <button
                     onClick={handleContinueNext}
-                    className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-xl shadow-md transition-all cursor-pointer"
+                    className="w-full sm:w-auto flex-1 flex items-center justify-center gap-2 bg-[#166534] hover:bg-[#14532d] text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-xl shadow-sm transition-all cursor-pointer"
                     id="btn-continue-from-scanner"
                   >
                     <span>{t.scanner.continueToFarmAnalysis}</span>
@@ -564,7 +583,7 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
 
                   <button
                     onClick={handleResetScanner}
-                    className="p-3 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl transition-colors cursor-pointer"
+                    className="p-3 bg-[#F8FAF5] hover:bg-[#DCE8DD]/40 text-[#163020] border border-[#DCE8DD] rounded-xl transition-colors cursor-pointer"
                     title={t.scanner.scanAgain}
                     id="btn-scan-again"
                   >
@@ -573,43 +592,6 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
                 </div>
               </div>
             </div>
-
-            {/* AI Vision Debug Info Collapsible */}
-            <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
-              <button
-                onClick={() => setShowDebugInfo(!showDebugInfo)}
-                className="w-full flex items-center justify-between text-xs font-semibold text-stone-600 hover:text-stone-900 transition-colors cursor-pointer"
-              >
-                <span className="flex items-center gap-1.5">
-                  <Cpu className="w-3.5 h-3.5 text-stone-500" />
-                  🔬 {isHi ? "एआई विज़न विश्लेषण विवरण (Debug Info)" : "AI Vision Analysis Details & Telemetry"}
-                </span>
-                {showDebugInfo ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-              </button>
-
-              {showDebugInfo && (
-                <div className="mt-2.5 pt-2.5 border-t border-stone-200 text-[11px] font-mono text-stone-700 space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-stone-500">Inference Engine:</span>
-                    <span className="font-bold text-emerald-800">{visionResult.debugMetadata?.modelName || (visionResult.analysisSource === "gemini_vision" ? "gemini-3.8-flash" : "Curated Agro Suite")}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-stone-500">Live API Status:</span>
-                    <span className="font-bold">{visionResult.debugMetadata?.isLiveApi ? "🟢 Live Gemini Multimodal Vision" : "🟡 Demo Verification Suite"}</span>
-                  </div>
-                  {visionResult.debugMetadata?.latencyMs && (
-                    <div className="flex justify-between">
-                      <span className="text-stone-500">Inference Latency:</span>
-                      <span>{visionResult.debugMetadata.latencyMs} ms</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span className="text-stone-500">Identified Crop Token:</span>
-                    <span className="text-stone-900 font-bold">{visionResult.cropData.cropName_en}</span>
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
         )}
 
@@ -617,24 +599,24 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
         {/* SCANNER RESULT STATE: 2. UNCERTAIN CROP STATE */}
         {/* =================================================================== */}
         {!isAnalyzing && visionResult && visionResult.status === "uncertain" && (
-          <div className="mb-8 p-6 sm:p-8 rounded-2xl bg-amber-50/90 border-2 border-amber-300 text-amber-950 text-center space-y-4">
-            <div className="w-14 h-14 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center mx-auto shadow-inner">
-              <HelpCircle className="w-8 h-8" />
+          <div className="mb-8 p-6 sm:p-8 rounded-2xl bg-[#F8FAF5] border border-[#FACC15] text-[#163020] text-center space-y-4">
+            <div className="w-14 h-14 rounded-full bg-[#FACC15]/20 text-[#163020] flex items-center justify-center mx-auto shadow-inner border border-[#FACC15]/40">
+              <HelpCircle className="w-8 h-8 text-[#166534]" />
             </div>
             <div className="max-w-xl mx-auto">
-              <h3 className="text-lg sm:text-xl font-black text-amber-950 mb-2">
+              <h3 className="text-lg sm:text-xl font-black text-[#163020] mb-2">
                 {isHi ? "फसल की पहचान अनिश्चित है" : "Crop Identification is Uncertain"}
               </h3>
-              <p className="text-xs sm:text-sm text-amber-900 leading-relaxed mb-4">
+              <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed mb-4">
                 {visionResult.uncertaintyReason
                   ? isHi
                     ? visionResult.uncertaintyReason.reason_hi
                     : visionResult.uncertaintyReason.reason_en
                   : t.scanner.uncertainMessage}
               </p>
-              <div className="p-3 bg-white/80 rounded-xl border border-amber-200 text-xs text-stone-700 text-left mb-6">
-                <p className="font-bold text-stone-900 mb-1">💡 {isHi ? "स्पष्ट फोटो लेने के सुझाव:" : "Tips for a clear photo:"}</p>
-                <ul className="list-disc list-inside space-y-1 text-[11px]">
+              <div className="p-3 bg-white rounded-xl border border-[#DCE8DD] text-xs text-[#163020] text-left mb-6">
+                <p className="font-bold text-[#163020] mb-1">💡 {isHi ? "स्पष्ट फोटो लेने के सुझाव:" : "Tips for a clear photo:"}</p>
+                <ul className="list-disc list-inside space-y-1 text-[11px] text-[#64748B]">
                   <li>{isHi ? "दिन के प्राकृतिक उजाले में फोटो लें ताकि पत्तियों का असली रंग दिखे।" : "Capture in good natural daylight to reveal true plant colors."}</li>
                   <li>{isHi ? "पत्ती के आकार, फूलों व तने को साफ फोकस में रखें।" : "Ensure leaf shape, veins, and floral parts are sharp and clear."}</li>
                   <li>{isHi ? "कैमरा को स्थिर रखें ताकि फोटो धुंधली न हो।" : "Hold the camera steady to avoid motion blur."}</li>
@@ -645,21 +627,21 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
             <div className="flex flex-wrap items-center justify-center gap-3">
               <button
                 onClick={handleStartCamera}
-                className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-5 py-2.5 rounded-xl shadow-sm text-xs sm:text-sm cursor-pointer"
+                className="flex items-center gap-2 bg-[#166534] hover:bg-[#14532d] text-white font-bold px-5 py-2.5 rounded-xl shadow-xs text-xs sm:text-sm cursor-pointer"
               >
-                <Camera className="w-4 h-4" />
+                <Camera className="w-4 h-4 text-[#22C55E]" />
                 <span>{t.scanner.takePhotoButton}</span>
               </button>
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-2 bg-stone-800 hover:bg-stone-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-sm text-xs sm:text-sm cursor-pointer"
+                className="flex items-center gap-2 bg-[#163020] hover:bg-[#163020]/90 text-white font-bold px-5 py-2.5 rounded-xl shadow-xs text-xs sm:text-sm cursor-pointer"
               >
                 <Upload className="w-4 h-4" />
                 <span>{t.scanner.uploadButton}</span>
               </button>
               <button
                 onClick={handleResetScanner}
-                className="px-4 py-2.5 bg-white border border-stone-300 hover:bg-stone-50 text-stone-700 font-semibold rounded-xl text-xs cursor-pointer"
+                className="px-4 py-2.5 bg-white border border-[#DCE8DD] hover:bg-[#F8FAF5] text-[#163020] font-semibold rounded-xl text-xs cursor-pointer"
               >
                 {t.scanner.orChooseSample}
               </button>
@@ -671,15 +653,15 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
         {/* SCANNER RESULT STATE: 3. MULTIPLE CROPS DETECTED */}
         {/* =================================================================== */}
         {!isAnalyzing && visionResult && visionResult.status === "multiple_crops" && (
-          <div className="mb-8 p-6 sm:p-8 rounded-2xl bg-teal-50 border-2 border-teal-300 text-teal-950 space-y-5">
+          <div className="mb-8 p-6 sm:p-8 rounded-2xl bg-[#F8FAF5] border border-[#DCE8DD] text-[#163020] space-y-5">
             <div className="text-center max-w-xl mx-auto">
-              <div className="w-12 h-12 rounded-full bg-teal-200 text-teal-900 flex items-center justify-center mx-auto mb-2 shadow-xs">
-                <Layers className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-full bg-white text-[#166534] border border-[#DCE8DD] flex items-center justify-center mx-auto mb-2 shadow-2xs">
+                <Layers className="w-6 h-6 text-[#22C55E]" />
               </div>
-              <h3 className="text-lg sm:text-xl font-black text-teal-950 mb-1">
+              <h3 className="text-lg sm:text-xl font-black text-[#163020] mb-1">
                 {t.scanner.multipleCropsTitle}
               </h3>
-              <p className="text-xs sm:text-sm text-teal-800">
+              <p className="text-xs sm:text-sm text-[#64748B]">
                 {t.scanner.selectWhichCrop}
               </p>
             </div>
@@ -690,24 +672,24 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
                 <button
                   key={candidate.cropId}
                   onClick={() => handleSelectCandidateCrop(candidate)}
-                  className="p-4 bg-white rounded-2xl border-2 border-teal-200 hover:border-teal-600 hover:shadow-md transition-all text-left group cursor-pointer"
+                  className="p-4 bg-white rounded-2xl border border-[#DCE8DD] hover:border-[#22C55E] hover:shadow-sm transition-all text-left group cursor-pointer"
                   id={`btn-select-candidate-${candidate.cropId}`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-2xl">{candidate.emoji}</span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-100 text-teal-900">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#F8FAF5] text-[#166534] border border-[#DCE8DD]">
                       {candidate.confidence}
                     </span>
                   </div>
-                  <h4 className="font-extrabold text-sm text-stone-900 group-hover:text-teal-900">
+                  <h4 className="font-extrabold text-sm text-[#163020] group-hover:text-[#166534]">
                     {isHi ? candidate.cropName_hi : candidate.cropName_en}
                   </h4>
-                  <p className="text-[11px] text-stone-500 mt-1 line-clamp-2">
+                  <p className="text-[11px] text-[#64748B] mt-1 line-clamp-2">
                     {isHi ? candidate.visualClue_hi : candidate.visualClue_en}
                   </p>
-                  <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-teal-700">
+                  <div className="mt-3 flex items-center gap-1 text-[11px] font-bold text-[#166534]">
                     <span>{isHi ? "इस फसल का विश्लेषण करें" : "Analyze this crop"}</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform text-[#22C55E]" />
                   </div>
                 </button>
               ))}
@@ -720,21 +702,31 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
         {/* =================================================================== */}
         {!isAnalyzing && !visionResult && (
           <>
+            {/* Synchronized Crop Visual Search & Auto-Update Selector */}
+            <div className="mb-6">
+              <CropSearchSelector
+                language={language}
+                onSelectCrop={handleSelectSearchCrop}
+                showPhotoPreview={true}
+                actionButtonLabel={isHi ? "इस फसल का विश्लेषण शुरू करें" : "Analyze this crop"}
+              />
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
               {/* 1. Take Photo Button */}
               <button
                 type="button"
                 onClick={handleStartCamera}
-                className="flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-emerald-600/60 bg-emerald-50/50 hover:bg-emerald-50 text-emerald-950 shadow-sm hover:shadow-md hover:border-emerald-600 transition-all duration-200 group cursor-pointer"
+                className="flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-[#166534] bg-[#F8FAF5] hover:bg-white text-[#163020] shadow-2xs hover:shadow-md transition-all duration-200 group cursor-pointer"
                 id="btn-take-photo-large"
               >
-                <div className="w-16 h-16 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform mb-3">
-                  <Camera className="w-8 h-8" />
+                <div className="w-16 h-16 rounded-2xl bg-[#166534] text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform mb-3">
+                  <Camera className="w-8 h-8 text-[#22C55E]" />
                 </div>
-                <span className="text-lg font-bold text-emerald-950">
+                <span className="text-lg font-bold text-[#166534]">
                   [ 📷 {t.scanner.takePhotoButton} ]
                 </span>
-                <span className="text-xs text-stone-600 mt-1">
+                <span className="text-xs text-[#64748B] mt-1">
                   {t.scanner.subtitle}
                 </span>
               </button>
@@ -742,7 +734,7 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
               {/* 2. Upload Image Button */}
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-dashed border-stone-300 hover:border-emerald-500 bg-stone-50 hover:bg-emerald-50/30 text-stone-800 shadow-sm hover:shadow-md transition-all duration-200 group cursor-pointer"
+                className="flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-dashed border-[#DCE8DD] hover:border-[#166534] bg-white hover:bg-[#F8FAF5] text-[#163020] shadow-2xs hover:shadow-md transition-all duration-200 group cursor-pointer"
                 id="btn-upload-image-large"
               >
                 <input
@@ -752,35 +744,35 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <div className="w-16 h-16 rounded-2xl bg-stone-800 text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform mb-3">
-                  <Upload className="w-8 h-8" />
+                <div className="w-16 h-16 rounded-2xl bg-[#163020] text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform mb-3">
+                  <Upload className="w-8 h-8 text-[#DCE8DD]" />
                 </div>
-                <span className="text-lg font-bold text-stone-900">
+                <span className="text-lg font-bold text-[#163020]">
                   [ 🖼 {t.scanner.uploadButton} ]
                 </span>
-                <span className="text-xs text-stone-600 mt-1">
+                <span className="text-xs text-[#64748B] mt-1">
                   {t.scanner.dragDropText}
                 </span>
               </div>
             </div>
 
             {/* Test Samples & Simulation Testers */}
-            <div className="pt-6 border-t border-stone-100">
+            <div className="pt-6 border-t border-[#DCE8DD]">
               <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                <span className="text-xs font-bold uppercase tracking-wider text-stone-600">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#64748B]">
                   {t.scanner.orChooseSample}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleSelectUnclearTest}
-                    className="text-[10px] bg-amber-100 hover:bg-amber-200 text-amber-900 px-2.5 py-1 rounded-full font-semibold transition-colors cursor-pointer"
+                    className="text-[10px] bg-[#FACC15]/20 hover:bg-[#FACC15]/30 text-[#163020] border border-[#FACC15]/50 px-2.5 py-1 rounded-full font-semibold transition-colors cursor-pointer"
                     title="Test Unclear/Blurry State"
                   >
                     🌫️ {isHi ? "धुंधली फोटो टेस्ट" : "Test Blur/Unclear"}
                   </button>
                   <button
                     onClick={handleSelectMultiCropTest}
-                    className="text-[10px] bg-teal-100 hover:bg-teal-200 text-teal-900 px-2.5 py-1 rounded-full font-semibold transition-colors cursor-pointer"
+                    className="text-[10px] bg-[#F8FAF5] hover:bg-[#DCE8DD]/40 text-[#166534] border border-[#DCE8DD] px-2.5 py-1 rounded-full font-semibold transition-colors cursor-pointer"
                     title="Test Multiple Crops Detection"
                   >
                     🌾🌱 {isHi ? "मिश्रित फसल टेस्ट" : "Test Multi-Crop"}
@@ -794,24 +786,29 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
                   <button
                     key={sample.id}
                     onClick={() => handleSelectSample(sample)}
-                    className="flex flex-col items-center text-center p-2.5 rounded-xl border border-stone-200 bg-white hover:bg-emerald-50/50 hover:border-emerald-400 hover:shadow-sm transition-all duration-150 group text-left cursor-pointer"
+                    className="flex flex-col items-center text-center p-2.5 rounded-xl border border-[#DCE8DD] bg-white hover:bg-[#F8FAF5] hover:border-[#22C55E] hover:shadow-xs transition-all duration-150 group text-left cursor-pointer"
                     id={`sample-crop-${sample.id}`}
                   >
-                    <div className="w-full aspect-4/3 rounded-lg overflow-hidden bg-stone-100 mb-2 relative">
+                    <div className="w-full aspect-4/3 rounded-lg overflow-hidden bg-[#F8FAF5] mb-2 relative border border-[#DCE8DD]">
                       <img
                         src={sample.sampleImage}
-                        alt={sample.cropName_en}
+                        alt={getLocalizedCropName(sample, language).split("(")[0].trim() || sample.cropName_hi || sample.cropName_en}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                        loading="lazy"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (!target.dataset.fallback) {
+                            target.dataset.fallback = "true";
+                            target.src = "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80";
+                          }
+                        }}
                       />
-                      <span className="absolute bottom-1 right-1 text-[9px] font-bold bg-stone-900/80 text-white px-1.5 py-0.5 rounded-xs">
-                        {sample.category}
-                      </span>
                     </div>
                     <div className="w-full">
-                      <p className="text-xs font-bold text-stone-900 truncate">
+                      <p className="text-xs font-bold text-[#163020] truncate">
                         {getLocalizedCropName(sample, language).split("(")[0]}
                       </p>
-                      <p className="text-[10px] text-emerald-800 font-medium truncate">
+                      <p className="text-[10px] text-[#166534] font-medium truncate">
                         {getLocalizedIssueName(sample, language).split("(")[0]}
                       </p>
                     </div>
@@ -823,8 +820,8 @@ export const ScannerStep: React.FC<ScannerStepProps> = ({
         )}
 
         {/* Clear Demonstration Disclaimer */}
-        <div className="mt-6 pt-4 border-t border-stone-100 flex items-start gap-2.5 text-stone-500 text-xs">
-          <AlertCircle className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
+        <div className="mt-6 pt-4 border-t border-[#DCE8DD] flex items-start gap-2.5 text-[#64748B] text-xs">
+          <AlertCircle className="w-4 h-4 text-[#64748B] shrink-0 mt-0.5" />
           <p className="leading-relaxed">
             {t.scanner.demoNotice}
           </p>

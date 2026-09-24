@@ -1,4 +1,8 @@
 import { CropIssueData, Language } from "../types";
+import { resolveCropPhoto } from "../services/cropPhotoRegistry";
+import regeneratedPaddyImage from "../assets/images/regenerated_image_1790275623529.webp";
+import regeneratedCottonImage from "../assets/images/regenerated_image_1790275624830.webp";
+import regeneratedSugarcaneImage from "../assets/images/regenerated_image_1790275626577.webp";
 
 export const SAMPLE_CROPS: CropIssueData[] = [
   {
@@ -35,7 +39,7 @@ export const SAMPLE_CROPS: CropIssueData[] = [
     possibleCause_hi: "सर्दियों का ठंडा व नम मौसम (12°C से 18°C), सुबह की भारी ओस और आसमान में बादल छाए रहने से कवक बीजाणुओं का तेजी से विकास।",
     whyHappening_en: "Characteristic cruciform yellow flowers and pinnatifid foliage develop raised white porcelain-like pustules on lower leaf surfaces and floral malformations ('staghead').",
     whyHappening_hi: "सरसों के पीले फूलों और निचली पत्तियों की सतह पर सफेद उभरे हुए छाले (पस्ट्यूल्स) बन गए हैं तथा डंठल फूलकर मुड़ रहे हैं।",
-    sampleImage: "https://images.unsplash.com/photo-1508873696983-2df5293cb32b?auto=format&fit=crop&w=800&q=80",
+    sampleImage: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80",
     steps: [
       {
         stepNumber: 1,
@@ -183,7 +187,7 @@ export const SAMPLE_CROPS: CropIssueData[] = [
     possibleCause_hi: "खेत में यूरिया (नाइट्रोजन) की अधिकता, लगातार पानी भरा रहना और तेज हवाओं से पत्तियों में लगे सूक्ष्म घाव।",
     whyHappening_en: "High humidity and continuous ponding water allowed bacteria to enter through hydathodes on leaf margins, leading to characteristic wavy yellow-white drying along leaf edges.",
     whyHappening_hi: "धान के खेत में लगातार पानी भरे रहने और नम मौसम के कारण जीवाणु पत्तियों के किनारों से प्रवेश कर गए हैं, जिससे पत्तियां किनारे से सूखकर सफेद-पीली हो रही हैं।",
-    sampleImage: "https://images.unsplash.com/photo-1536939459926-301728717817?auto=format&fit=crop&w=800&q=80",
+    sampleImage: regeneratedPaddyImage,
     steps: [
       {
         stepNumber: 1,
@@ -479,7 +483,7 @@ export const SAMPLE_CROPS: CropIssueData[] = [
     possibleCause_hi: "सफेद मक्खी (व्हाइटफ्लाई) कीट द्वारा पत्तियों का रस चूसना और पौधे में वायरस फैलाना।",
     whyHappening_en: "Broad palmately lobed leaves curl upward in cup-shapes with thickened, prominent dark green veins and enations underneath.",
     whyHappening_hi: "पत्तियां ऊपर की तरफ मुड़कर प्यालेनुमा हो गई हैं और पत्तियों की नसें नीचे से असामान्य रूप से मोटी व उभरी हुई हैं।",
-    sampleImage: "https://images.unsplash.com/photo-1594488500201-9a99710b14c3?auto=format&fit=crop&w=800&q=80",
+    sampleImage: regeneratedCottonImage,
     steps: [
       {
         stepNumber: 1,
@@ -553,7 +557,7 @@ export const SAMPLE_CROPS: CropIssueData[] = [
     possibleCause_hi: "संक्रमित बीज (गन्ने की पोरियां), भारी मिट्टी में लगातार जलभराव और एक ही खेत में बार-बार गन्ने की बुवाई।",
     whyHappening_en: "Internal stalk discoloration with alternating red and white transverse bands, hollowed stems, and drying third/fourth leaves from top.",
     whyHappening_hi: "गन्ने के तने के अंदर लाल व सफेद धारियां बन गई हैं, तना सूख रहा है और ऊपरी पत्तियां पीली पड़कर सूख रही हैं।",
-    sampleImage: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80",
+    sampleImage: regeneratedSugarcaneImage,
     steps: [
       {
         stepNumber: 1,
@@ -590,6 +594,124 @@ export const SAMPLE_CROPS: CropIssueData[] = [
         tag_hi: "दीर्घकालिक बचाव",
         description_en: "Do not take ratoon (pedi) from infected plots. Rotate field with legume crops (moong/urad) or paddy next season.",
         description_hi: "संक्रमित खेत से पेड़ी की फसल न लें। अगली बार दालों (मूंग/उड़द) या हरी खाद की बुवाई करके फसल चक्र अपनाएं।",
+      },
+    ],
+  },
+  {
+    id: "mango-anthracnose",
+    cropName_en: "Mango",
+    cropName_hi: "आम",
+    cropEmoji: "🥭",
+    category: "Fruit",
+    issueName_en: "Anthracnose & Blossom Blight (Colletotrichum gloeosporioides)",
+    issueName_hi: "एंथ्रेक्नोज व बौर झुलसा रोग (Colletotrichum gloeosporioides)",
+    scientificName: "Mangifera indica / Colletotrichum gloeosporioides",
+    confidenceScore: 94,
+    severity: "High",
+    sampleImage: "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=1000&q=80",
+    possibleCause_en:
+      "Fungal pathogen thriving in high relative humidity (>80%) and cloudy, damp weather during mango flowering and fruit setting stage.",
+    possibleCause_hi:
+      "आम में बौर आने और फल लगने के समय अधिक नमी (80% से ऊपर) और बादलों वाले मौसम में फैलने वाला कवक (फंगस) संक्रमण।",
+    whyHappening_en:
+      "Black sunken necrotic lesions on leaves and tender branches, blossom drying up, and premature dropping of small pea-sized fruitlets.",
+    whyHappening_hi:
+      "पत्तियों और कोमल टहनियों पर काले धब्बे, बौर का सूखकर गिरना तथा मटर के आकार के छोटे फलों पर काले चकत्ते पड़ना।",
+    steps: [
+      {
+        stepNumber: 1,
+        title_en: "Prune Infected Twigs & Clean Canopy",
+        title_hi: "सूखी व संक्रमित टहनियों की छंटाई",
+        tag_en: "Immediate (Day 1)",
+        tag_hi: "तत्काल (दिन 1)",
+        description_en: "Prune dead diseased twigs 5-10 cm below infection mark. Apply Bordeaux paste or Copper Oxychloride paste on cut ends.",
+        description_hi: "संक्रमित व सूखी टहनियों को काटकर बगीचे से दूर जलाएं तथा कटे हुए भाग पर कॉपर ऑक्सीक्लोराइड का लेप लगाएं।",
+      },
+      {
+        stepNumber: 2,
+        title_en: "Fungicidal Protective Spray",
+        title_hi: "फफूंदनाशी का सुरक्षात्मक छिड़काव",
+        tag_en: "Day 2",
+        tag_hi: "दिन 2",
+        description_en: "Spray Carbendazim 50% WP @ 1g/L or Azoxystrobin 23% SC @ 1ml/L during calm morning weather, covering canopy thoroughly.",
+        description_hi: "कार्बेंडाजिम 50% WP (1 ग्राम/लीटर) या एज़ोक्सीस्ट्रोबिन (1 मिली/लीटर पानी) का पूरे पेड़ पर अच्छी तरह छिड़काव करें।",
+      },
+      {
+        stepNumber: 3,
+        title_en: "Nutrient & Micronutrient Foliar Feed",
+        title_hi: "सूक्ष्म पोषक तत्व (बोरॉन व जिंक) पोषण",
+        tag_en: "Day 7",
+        tag_hi: "दिन 7",
+        description_en: "Spray Soluble Boron (20%) @ 1.5g/L water to strengthen fruit retention and arrest premature fruitlet drop.",
+        description_hi: "फलों को झड़ने से रोकने और मजबूती देने के लिए घुलनशील बोरॉन (1.5 ग्राम/लीटर) का छिड़काव करें।",
+      },
+      {
+        stepNumber: 4,
+        title_en: "Orchard Hygiene & Canopy Sunlight Aeration",
+        title_hi: "बगीचे की सफाई व धूप-हवा का प्रबंध",
+        tag_en: "Ongoing",
+        tag_hi: "सतत",
+        description_en: "Keep orchard floor weed-free and plow interspaces to destroy fungal resting spores overwintering in fallen leaves.",
+        description_hi: "पेड़ के नीचे गिरी पत्तियों को इकट्ठा करके नष्ट करें ताकि फंगस के बीजाणु दोबारा संक्रमण न फैला सकें।",
+      },
+    ],
+  },
+  {
+    id: "chilli-leaf-curl",
+    cropName_en: "Chilli",
+    cropName_hi: "मिर्च",
+    cropEmoji: "🌶️",
+    category: "Vegetable",
+    issueName_en: "Chilli Leaf Curl Complex & Thrips/Mites (Murda Rog)",
+    issueName_hi: "मिर्च का पर्ण कुंचन रोग (मुरड़ा/चुरड़ा रोग) व थ्रिप्स",
+    scientificName: "Capsicum annuum / Begomovirus & Scirtothrips dorsalis",
+    confidenceScore: 92,
+    severity: "High",
+    sampleImage: "https://images.unsplash.com/photo-1588252303782-cb80119abd6d?auto=format&fit=crop&w=1000&q=80",
+    possibleCause_en:
+      "Transmitted by whiteflies (Bemisia tabaci) and exacerbated by yellow tea mites and thrips during hot dry or humid transitions.",
+    possibleCause_hi:
+      "सफेद मक्खी और थ्रिप्स कीटों द्वारा फैलने वाला विषाणु रोग, जिससे पत्तियां मुड़कर नाव के आकार की हो जाती हैं।",
+    whyHappening_en:
+      "Upward curling of leaf margins, puckering, stunted bushy appearance with reduced flower and fruit setting.",
+    whyHappening_hi:
+      "पत्तियों के किनारे ऊपर की ओर मुड़ना, पौधे का बौना रह जाना और फूल व फलियों का न लगना या सिकुड़ जाना।",
+    steps: [
+      {
+        stepNumber: 1,
+        title_en: "Vector Suppression Spray",
+        title_hi: "सफेद मक्खी व रसचूसक कीट नियंत्रण",
+        tag_en: "Day 1",
+        tag_hi: "दिन 1",
+        description_en: "Spray Diafenthiuron 50% WP @ 1.25 g/L or Fipronil 5% SC @ 2 ml/L on leaf undersides where pests congregate.",
+        description_hi: "पत्तियों के निचले हिस्से पर डायफेंथियूरॉन या फिप्रोनिल (2 मिली/लीटर) का छिड़काव करें।",
+      },
+      {
+        stepNumber: 2,
+        title_en: "Install Yellow & Blue Sticky Traps",
+        title_hi: "पीले व नीले स्टिकी ट्रैप लगाना",
+        tag_en: "Day 2",
+        tag_hi: "दिन 2",
+        description_en: "Install 15-20 yellow sticky traps (for whiteflies) and blue sticky traps (for thrips) per acre.",
+        description_hi: "खेत में प्रति एकड़ 15-20 पीले और नीले चिपचिपे कार्ड लगाएं ताकि उड़ने वाले कीट चिपक जाएं।",
+      },
+      {
+        stepNumber: 3,
+        title_en: "Neem Seed Kernel Extract Spray",
+        title_hi: "नीम तेल (10,000 PPM) का छिड़काव",
+        tag_en: "Day 6",
+        tag_hi: "दिन 6",
+        description_en: "Spray Azadirachtin / Neem Oil 10,000 PPM @ 2.5 ml/L water as an eco-friendly anti-feedant.",
+        description_hi: "नीम तेल (10,000 PPM) का 2.5 मिली प्रति लीटर की दर से छिड़काव करें।",
+      },
+      {
+        stepNumber: 4,
+        title_en: "Balanced Potassium & Micronutrient Spray",
+        title_hi: "पोटाश व सूक्ष्म पोषक तत्वों का पोषण",
+        tag_en: "Day 10",
+        tag_hi: "दिन 10",
+        description_en: "Spray 00:52:34 or multi-micronutrient mixture @ 4g/L to help new foliage emerge healthy.",
+        description_hi: "पौधे को नई पत्तियां निकालने में मदद के लिए सूक्ष्म पोषक तत्व मिश्रण का छिड़काव करें।",
       },
     ],
   },
@@ -650,3 +772,95 @@ export function getLocalizedStepTag(step: { tag_en: string; tag_hi: string; [key
   }
   return lang === "en" ? step.tag_en : step.tag_hi || step.tag_en;
 }
+
+/**
+ * Resolves or synthesizes CropIssueData for any crop name entered or selected.
+ * Keeps sampleImage strictly synchronized with verified photographic registry.
+ */
+export function resolveCropIssueData(queryOrName: string): CropIssueData {
+  if (!queryOrName) return SAMPLE_CROPS[0];
+  const q = queryOrName.toLowerCase().trim();
+
+  // Check direct id or names in SAMPLE_CROPS
+  const existing = SAMPLE_CROPS.find(
+    (c) =>
+      c.id.toLowerCase() === q ||
+      c.cropName_en.toLowerCase().includes(q) ||
+      q.includes(c.cropName_en.toLowerCase()) ||
+      c.cropName_hi.includes(queryOrName) ||
+      queryOrName.includes(c.cropName_hi)
+  );
+
+  if (existing) {
+    return existing;
+  }
+
+  // Synthesize from visual registry if available
+  const cleanId = q.replace(/[^a-z0-9]+/g, "-") || "custom-crop";
+  const photoResult = resolveCropPhoto(queryOrName);
+  const validCategories: Record<string, CropIssueData["category"]> = {
+    Cereal: "Cereal",
+    Vegetable: "Vegetable",
+    Fruit: "Fruit",
+    Pulse: "Pulse",
+    "Cash Crop": "Cash Crop",
+  };
+  const category: CropIssueData["category"] = (photoResult.crop?.category && validCategories[photoResult.crop.category]) || "Cash Crop";
+
+  return {
+    id: cleanId,
+    cropName_en: photoResult.crop?.primaryName_en || queryOrName,
+    cropName_hi: photoResult.crop?.primaryName_hi || queryOrName,
+    cropEmoji: photoResult.crop?.emoji || "🌿",
+    category,
+    issueName_en: "Nutrient & Pest Scouting Advisory",
+    issueName_hi: "पोषण व कीट निगरानी परामर्श",
+    scientificName: "Plantae / Botanical Analysis",
+    confidenceScore: 88,
+    severity: "Medium",
+    sampleImage: photoResult.photoUrl || "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80",
+    possibleCause_en: "Observed physiological stress or seasonal pest susceptibility.",
+    possibleCause_hi: "मौसम परिवर्तन या पोषण असंतुलन के कारण पौधे में देखा गया तनाव।",
+    whyHappening_en: "Visual symptoms indicate need for foliar nutrition and root aeration.",
+    whyHappening_hi: "पत्तियों और तने के लक्षणों के आधार पर सूक्ष्म पोषक तत्वों व संतुलित सिंचाई की आवश्यकता है।",
+    steps: [
+      {
+        stepNumber: 1,
+        title_en: "Foliage & Underside Inspection",
+        title_hi: "पत्तियों के निचले हिस्से का निरीक्षण",
+        tag_en: "Day 1",
+        tag_hi: "दिन 1",
+        description_en: "Inspect affected leaves, stems and roots for pest colonies or fungal spots.",
+        description_hi: "प्रभावित पत्तियों और तने का बारीकी से निरीक्षण करें।",
+      },
+      {
+        stepNumber: 2,
+        title_en: "Bio-Protection Spray",
+        title_hi: "जैविक सुरक्षा छिड़काव",
+        tag_en: "Day 2",
+        tag_hi: "दिन 2",
+        description_en: "Spray Neem Oil (10,000 PPM) @ 2-3ml/L or organic bio-fungicide in calm morning hours.",
+        description_hi: "सुबह के समय नीम तेल (2-3 मिली/लीटर पानी) का सुरक्षात्मक छिड़काव करें।",
+      },
+      {
+        stepNumber: 3,
+        title_en: "Soil Moisture Regulation",
+        title_hi: "उचित नमी व जल प्रबंधन",
+        tag_en: "Day 5",
+        tag_hi: "दिन 5",
+        description_en: "Maintain adequate aeration and avoid waterlogging around the root zone.",
+        description_hi: "जड़ों के पास जलभराव न होने दें और उचित जल निकास सुनिश्चित करें।",
+      },
+      {
+        stepNumber: 4,
+        title_en: "Balanced Micro-Nutrients",
+        title_hi: "संतुलित सूक्ष्म पोषक तत्व",
+        tag_en: "Day 7",
+        tag_hi: "दिन 7",
+        description_en: "Apply foliar micronutrient blend or compost to restore vigor.",
+        description_hi: "पौधे की शक्ति बढ़ाने के लिए वर्मीकम्पोस्ट या सूक्ष्म पोषक तत्वों का प्रयोग करें।",
+      },
+    ],
+  };
+}
+

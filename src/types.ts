@@ -106,6 +106,7 @@ export interface CropIssueData {
   id: string;
   cropName_en: string;
   cropName_hi: string;
+  cropEmoji?: string;
   cropName_bn?: string;
   cropName_mr?: string;
   cropName_te?: string;
@@ -377,3 +378,31 @@ export interface VisionAnalysisResult {
   };
   debugMetadata?: VisionDebugMetadata;
 }
+
+export interface CropHealthVoiceAnalysis {
+  status: "identified" | "uncertain";
+  confidence: ConfidenceLevel;
+  confidenceScore: number;
+  cropIdentified_hi: string;
+  cropIdentified_en: string;
+  problem_hi: string;
+  problem_en: string;
+  symptoms_hi: string;
+  symptoms_en: string;
+  causes_hi: string;
+  causes_en: string;
+  checkNext_hi: string;
+  checkNext_en: string;
+  managementSteps_hi: string[];
+  managementSteps_en: string[];
+  consultExpert_hi: string;
+  consultExpert_en: string;
+  voiceScript_hi: string;
+  voiceScript_roman?: string;
+  uncertainMessage_hi?: string;
+  uncertainMessage_roman?: string;
+  imageUrl?: string;
+  isDemo?: boolean;
+  modelUsed?: string;
+}
+

@@ -9,7 +9,6 @@ import {
   HelpCircle,
   PhoneCall,
   ArrowDown,
-  Sparkles,
 } from "lucide-react";
 import { Language, StepNumber } from "../types";
 
@@ -93,27 +92,22 @@ export const JourneyVisualFlow: React.FC<JourneyVisualFlowProps> = ({
   ];
 
   return (
-    <div className="w-full bg-gradient-to-r from-emerald-900 via-stone-900 to-emerald-950 text-white rounded-2xl p-4 sm:p-6 shadow-md border border-emerald-800/40 relative overflow-hidden my-4">
-      {/* Subtle background glow */}
-      <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
-
+    <div className="w-full bg-white text-[#163020] rounded-2xl p-4 sm:p-6 shadow-sm border border-[#DCE8DD] relative overflow-hidden my-4">
       <div className="relative z-10">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-white/10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-[#DCE8DD]">
           <div>
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              <h3 className="text-sm font-bold tracking-wide uppercase text-emerald-300">
+              <h3 className="text-sm font-bold tracking-wide uppercase text-[#166534]">
                 {isHi ? "कृषिसेतु एआई पारदर्शी कार्यप्रवाह" : "KRISHISETU AI End-to-End Visual Flow"}
               </h3>
             </div>
-            <p className="text-xs text-stone-300">
+            <p className="text-xs text-[#64748B]">
               {isHi
                 ? "सरल 1-पथ निर्देशित किसान अनुभव — बिना किसी जटिल डैशबोर्ड के"
                 : "One simple guided journey from leaf scan to tailored resolution or expert escalation"}
             </p>
           </div>
-          <span className="text-[11px] font-semibold bg-white/10 text-emerald-200 px-2.5 py-1 rounded-full border border-white/10 self-start sm:self-auto">
+          <span className="text-[11px] font-semibold bg-[#F8FAF5] text-[#166534] px-2.5 py-1 rounded-full border border-[#DCE8DD] self-start sm:self-auto">
             {isHi ? "7 सरल चरण" : "7 Guided Steps"}
           </span>
         </div>
@@ -130,10 +124,10 @@ export const JourneyVisualFlow: React.FC<JourneyVisualFlowProps> = ({
                 onClick={() => onSelectStep && node.step <= currentStep && onSelectStep(node.step)}
                 className={`relative flex flex-col items-center text-center p-3 rounded-xl border transition-all duration-200 ${
                   isActive
-                    ? "bg-white text-stone-900 border-emerald-400 ring-2 ring-emerald-400/80 shadow-lg scale-102"
+                    ? "bg-[#166534] text-white border-[#22C55E] ring-2 ring-[#22C55E]/40 shadow-md scale-102"
                     : isCompleted
-                    ? "bg-white/10 text-emerald-100 border-emerald-500/30 hover:bg-white/15 cursor-pointer"
-                    : "bg-white/5 text-stone-400 border-white/5 opacity-60"
+                    ? "bg-[#F8FAF5] text-[#166534] border-[#DCE8DD] hover:border-[#22C55E] hover:bg-[#F8FAF5]/80 cursor-pointer"
+                    : "bg-[#F8FAF5]/40 text-[#64748B]/60 border-[#DCE8DD]/40 opacity-70"
                 }`}
                 id={`visual-flow-node-${node.step}`}
               >
@@ -141,10 +135,10 @@ export const JourneyVisualFlow: React.FC<JourneyVisualFlowProps> = ({
                 <div
                   className={`w-7 h-7 rounded-lg flex items-center justify-center mb-1.5 font-bold text-xs ${
                     isActive
-                      ? "bg-emerald-700 text-white shadow-xs"
+                      ? "bg-white/20 text-white shadow-2xs"
                       : isCompleted
-                      ? "bg-emerald-400/20 text-emerald-300"
-                      : "bg-white/10 text-stone-300"
+                      ? "bg-[#22C55E]/15 text-[#166534]"
+                      : "bg-[#DCE8DD]/50 text-[#64748B]"
                   }`}
                 >
                   {node.icon}
@@ -153,13 +147,15 @@ export const JourneyVisualFlow: React.FC<JourneyVisualFlowProps> = ({
                 <div className="text-[11px] font-extrabold tracking-tight">
                   {isHi ? node.label_hi : node.label_en}
                 </div>
-                <div className={`text-[10px] mt-0.5 line-clamp-1 ${isActive ? "text-stone-600" : "text-stone-300"}`}>
+                <div className={`text-[10px] mt-0.5 line-clamp-1 ${isActive ? "text-white/85" : "text-[#64748B]"}`}>
                   {isHi ? node.desc_hi : node.desc_en}
                 </div>
 
                 {/* Arrow connector on mobile/desktop */}
                 {index < nodes.length - 1 && (
-                  <div className="hidden lg:block absolute -right-2 top-1/2 -translate-y-1/2 z-20 pointer-events-none text-emerald-400/60 text-xs">
+                  <div className={`hidden lg:block absolute -right-2 top-1/2 -translate-y-1/2 z-20 pointer-events-none text-xs font-bold ${
+                    isCompleted ? "text-[#22C55E]" : "text-[#DCE8DD]"
+                  }`}>
                     →
                   </div>
                 )}

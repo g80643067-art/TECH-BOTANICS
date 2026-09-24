@@ -172,6 +172,10 @@ export interface TranslationSchema {
     submittedTitle: string;
     submittedDesc: string;
     referenceIdLabel: string;
+    editableBadge?: string;
+    editNotice?: string;
+    resetDefault?: string;
+    editResubmit?: string;
   };
   aiAgent: {
     buttonText: string;
@@ -373,6 +377,10 @@ export const englishTranslations: TranslationSchema = {
     submittedTitle: "Your request has been submitted!",
     submittedDesc: "An agricultural extension officer will review your crop scan and contact you at",
     referenceIdLabel: "Reference Case ID",
+    editableBadge: "Editable",
+    editNotice: "All words and fields below (including crop and location) are fully editable before submitting.",
+    resetDefault: "Reset to detected",
+    editResubmit: "Edit Details & Resubmit",
   },
   aiAgent: {
     buttonText: "Ask KrishiSetu AI",
@@ -597,6 +605,10 @@ export const hindiTranslations: TranslationSchema = {
     submittedTitle: "आपका अनुरोध सफलतापूर्वक सबमिट हो गया!",
     submittedDesc: "कृषि विस्तार अधिकारी आपकी फसल की जांच करेंगे और शीघ्र ही इस नंबर पर संपर्क करेंगे:",
     referenceIdLabel: "केस संदर्भ संख्या (Reference ID)",
+    editableBadge: "संपादन योग्य",
+    editNotice: "सबमिट करने से पहले नीचे दिए गए सभी शब्द और विवरण (फसल और स्थान सहित) पूरी तरह संपादन योग्य हैं।",
+    resetDefault: "स्वतः मान पर रीसेट करें",
+    editResubmit: "विवरण संपादित करें व पुनः सबमिट करें",
   },
   aiAgent: {
     buttonText: "कृषिसेतु एआई से पूछें",

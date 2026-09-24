@@ -23,13 +23,16 @@ import { EscalationStep } from "./components/EscalationStep";
 import { FloatingAiAgent } from "./components/FloatingAiAgent";
 import { ConfigModal } from "./components/ConfigModal";
 import { ReportModal } from "./components/ReportModal";
-import { TechBotanicsSideTag } from "./components/TechBotanicsSideTag";
+import { CropHealthVoiceAssistant } from "./components/CropHealthVoiceAssistant";
 import { CropIssueData, FarmLocation, Language, SoilOption, StepNumber, VisionAnalysisResult } from "./types";
 import { SAMPLE_CROPS } from "./data/mockCrops";
 import { SOIL_OPTIONS } from "./data/soilTypes";
 import { INDIAN_STATES_DATA, buildManualFarmLocation } from "./data/locations";
 
 export default function App() {
+  // Navigation Mode: "voice-assistant" (Fasal Health Check with AI Female Voice) or "pipeline" (7-Step Journey)
+  const [activeSection, setActiveSection] = useState<"voice-assistant" | "pipeline">("voice-assistant");
+
   // Session State
   const [language, setLanguage] = useState<Language>("hi");
   const [currentStep, setCurrentStep] = useState<StepNumber>(1);
@@ -112,38 +115,102 @@ export default function App() {
 
   // Step Navigation Jump
   const handleNavigateStep = (step: StepNumber) => {
+    setActiveSection("pipeline");
     setCurrentStep(step);
   };
 
+  // Continue from Voice Assistant to Full Advisory
+  const handleContinueFromVoiceToAdvisory = (cropIdOrName: string, image: string) => {
+    if (image) setCropImage(image);
+    const matched = SAMPLE_CROPS.find(
+      (c) =>
+        c.id === cropIdOrName ||
+        c.cropName_en.toLowerCase().includes(cropIdOrName.toLowerCase()) ||
+        c.cropName_hi.includes(cropIdOrName)
+    );
+    if (matched) {
+      setDetectedCrop(matched);
+    }
+    setActiveSection("pipeline");
+    setCurrentStep(3); // proceed to location & soil customization
+  };
+
   return (
-    <div className="min-h-screen bg-stone-100/70 text-stone-900 flex flex-col font-sans selection:bg-emerald-200">
+    <div className="min-h-screen bg-[#F8FAF5] text-[#163020] flex flex-col font-sans selection:bg-[#FACC15]/30 selection:text-[#163020]">
       {/* Top Application Header */}
       <Header
         language={language}
         onLanguageChange={setLanguage}
-        onOpenSettings={() => setIsConfigOpen(true)}
-        expertPhoneNumber={expertPhoneNumber}
-        onResetSession={handleResetSession}
-      />
-
-      {/* 7-Step Interactive Pipeline Breadcrumb Indicator */}
-      <JourneyIndicator
-        language={language}
         currentStep={currentStep}
         onNavigateStep={handleNavigateStep}
-        canNavigateBack={currentStep > 1}
+        expertPhoneNumber={expertPhoneNumber}
+        onOpenConfig={() => setIsConfigOpen(true)}
+        onReset={handleResetSession}
+        onOpenAiAgent={() => setIsAiAgentOpen(true)}
+        activeSection={activeSection}
+        onSelectSection={setActiveSection}
       />
+
+      {/* Mode Selector Pill Bar */}
+      <div className="w-full max-w-6xl mx-auto px-4 pt-4 pb-1 flex items-center justify-center">
+        <div className="inline-flex p-1.5 rounded-2xl bg-white border border-[#DCE8DD] shadow-2xs">
+          <button
+            onClick={() => setActiveSection("voice-assistant")}
+            className={`flex items-center gap-2 px-4 sm:px-6 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+              activeSection === "voice-assistant"
+                ? "bg-[#166534] text-white shadow-xs"
+                : "text-[#163020] hover:bg-[#F8FAF5]"
+            }`}
+            id="tab-voice-assistant"
+          >
+            <span>🎙️ फसल हेल्थ AI (वॉइस असिस्टेंट)</span>
+            <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] bg-[#22C55E] text-white font-bold">
+              NEW
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveSection("pipeline")}
+            className={`flex items-center gap-2 px-4 sm:px-6 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+              activeSection === "pipeline"
+                ? "bg-[#166534] text-white shadow-xs"
+                : "text-[#163020] hover:bg-[#F8FAF5]"
+            }`}
+            id="tab-farm-pipeline"
+          >
+            <span>🌾 संपूर्ण कृषि यात्रा (7-Step Journey)</span>
+          </button>
+        </div>
+      </div>
 
       {/* Main Centered Content Container */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 flex flex-col justify-start">
-        {/* Visual End-to-End Pipeline Banner shown for Steps 2 to 7 */}
-        {currentStep > 1 && (
-          <JourneyVisualFlow
-            language={language}
-            currentStep={currentStep}
-            onSelectStep={handleNavigateStep}
+        {/* SECTION 1: AI-POWERED CROP HEALTH VOICE ASSISTANT */}
+        {activeSection === "voice-assistant" && (
+          <CropHealthVoiceAssistant
+            onContinueToFullAdvisory={handleContinueFromVoiceToAdvisory}
+            expertPhoneNumber={expertPhoneNumber}
           />
         )}
+
+        {/* SECTION 2: 7-STEP COMPREHENSIVE ADVISORY PIPELINE */}
+        {activeSection === "pipeline" && (
+          <>
+            {/* 7-Step Interactive Pipeline Breadcrumb Indicator */}
+            <JourneyIndicator
+              language={language}
+              currentStep={currentStep}
+              onNavigateStep={handleNavigateStep}
+              canNavigateBack={currentStep > 1}
+            />
+
+            {/* Visual End-to-End Pipeline Banner shown for Steps 2 to 7 */}
+            {currentStep > 1 && (
+              <JourneyVisualFlow
+                language={language}
+                currentStep={currentStep}
+                onSelectStep={handleNavigateStep}
+              />
+            )}
 
         {/* Step 1: Language Selection */}
         {currentStep === 1 && (
@@ -235,6 +302,8 @@ export default function App() {
             )}
           </>
         )}
+          </>
+        )}
       </main>
 
       {/* Floating AI Agent Advisor */}
@@ -274,25 +343,20 @@ export default function App() {
         />
       )}
 
-      {/* Side Tag: Powered by TechBotanics */}
-      <TechBotanicsSideTag language={language} />
-
       {/* Minimal Footer */}
-      <footer className="bg-stone-900 text-stone-400 py-6 px-4 text-xs text-center border-t border-stone-800">
+      <footer className="bg-[#163020] text-[#DCE8DD]/80 py-6 px-4 text-xs text-center border-t border-[#166534]/40">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-extrabold text-white">KRISHISETU AI</span>
-            <span>•</span>
+            <span className="font-extrabold text-white tracking-wide">KRISHISETU AI</span>
+            <span className="text-[#22C55E]">•</span>
             <span>{language === "hi" ? "किसान-प्रथम सरल फसल निदान प्रणाली" : "Farmer-First Guided Agricultural Intelligence"}</span>
-            <span className="hidden md:inline">•</span>
-            <span className="hidden md:inline text-emerald-400 font-medium">Powered by TechBotanics</span>
           </div>
-          <div className="flex items-center gap-4 text-stone-500">
+          <div className="flex items-center gap-4 text-[#DCE8DD]/70">
             <span>Kisan Call Center: 1800-180-1551</span>
             <span>•</span>
             <button
               onClick={() => setIsConfigOpen(true)}
-              className="text-stone-400 hover:text-white underline cursor-pointer"
+              className="text-[#DCE8DD] hover:text-white underline decoration-[#22C55E]/60 hover:decoration-[#22C55E] transition-colors cursor-pointer"
             >
               {language === "hi" ? "हेल्पलाइन सेटिंग्स" : "Helpline Settings"}
             </button>

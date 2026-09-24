@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Layers, MapPin, Navigation, Sparkles, Sun, Compass } from "lucide-react";
+import { Layers, MapPin, Navigation, Sun, Compass } from "lucide-react";
 import { FarmLocation, Language } from "../types";
 import { getTranslation } from "../data/translations";
 
@@ -94,7 +94,7 @@ export const FarmLocationMap: React.FC<FarmLocationMapProps> = ({
               width: 44px;
               height: 44px;
               border-radius: 50%;
-              background: rgba(16, 185, 129, 0.35);
+              background: rgba(34, 197, 94, 0.35);
               animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
             "></div>
             <div style="
@@ -102,9 +102,9 @@ export const FarmLocationMap: React.FC<FarmLocationMapProps> = ({
               width: 36px;
               height: 36px;
               border-radius: 50%;
-              background: #047857;
+              background: #166534;
               border: 3px solid #ffffff;
-              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+              box-shadow: 0 4px 12px rgba(22, 48, 32, 0.3);
               display: flex;
               align-items: center;
               justify-content: center;
@@ -125,10 +125,10 @@ export const FarmLocationMap: React.FC<FarmLocationMapProps> = ({
       // Add Agro-Climatic Microzone coverage radius circle (~8km)
       const circle = L.circle([lat, lng], {
         radius: 7500,
-        color: "#059669",
+        color: "#166534",
         weight: 1.5,
         dashArray: "4, 6",
-        fillColor: "#10b981",
+        fillColor: "#22C55E",
         fillOpacity: 0.12,
       }).addTo(map);
       circleRef.current = circle;
@@ -153,27 +153,27 @@ export const FarmLocationMap: React.FC<FarmLocationMapProps> = ({
   }, [lat, lng, mapType]);
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden border border-stone-200/90 shadow-sm bg-stone-100">
+    <div className="relative w-full rounded-2xl overflow-hidden border border-[#DCE8DD] shadow-xs bg-[#F8FAF5]">
       {/* Top Banner overlay */}
-      <div className="absolute top-3 left-3 z-[400] flex items-center gap-2 bg-stone-900/85 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-stone-700/60 text-white shadow-md">
-        <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
+      <div className="absolute top-3 left-3 z-[400] flex items-center gap-2 bg-[#163020]/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#166534]/50 text-white shadow-xs">
+        <MapPin className="w-4 h-4 text-[#22C55E] shrink-0" />
         <span className="text-xs font-bold truncate max-w-[220px] sm:max-w-xs">
           {location.villageOrArea || location.district.split("(")[0].trim()}
         </span>
-        <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-semibold px-2 py-0.5 rounded-full border border-emerald-500/30">
+        <span className="text-[10px] bg-[#22C55E]/20 text-[#22C55E] font-semibold px-2 py-0.5 rounded-full border border-[#22C55E]/30">
           {isHi ? "कृषि क्षेत्र" : "Agro-Zone"}
         </span>
       </div>
 
       {/* Map Layer Mode Switcher */}
-      <div className="absolute bottom-3 left-3 z-[400] flex items-center bg-white/90 backdrop-blur-md p-1 rounded-xl border border-stone-200 shadow-sm text-xs font-bold text-stone-700">
+      <div className="absolute bottom-3 left-3 z-[400] flex items-center bg-white/95 backdrop-blur-md p-1 rounded-xl border border-[#DCE8DD] shadow-xs text-xs font-bold text-[#163020]">
         <button
           type="button"
           onClick={() => setMapType("streets")}
           className={`px-2.5 py-1 rounded-lg transition-all ${
             mapType === "streets"
-              ? "bg-emerald-700 text-white shadow-2xs"
-              : "hover:bg-stone-100 text-stone-600"
+              ? "bg-[#166534] text-white shadow-2xs"
+              : "hover:bg-[#F8FAF5] text-[#64748B]"
           }`}
         >
           {isHi ? "मानचित्र" : "Standard"}
@@ -183,8 +183,8 @@ export const FarmLocationMap: React.FC<FarmLocationMapProps> = ({
           onClick={() => setMapType("satellite")}
           className={`px-2.5 py-1 rounded-lg transition-all ${
             mapType === "satellite"
-              ? "bg-emerald-700 text-white shadow-2xs"
-              : "hover:bg-stone-100 text-stone-600"
+              ? "bg-[#166534] text-white shadow-2xs"
+              : "hover:bg-[#F8FAF5] text-[#64748B]"
           }`}
         >
           {isHi ? "उपग्रह" : "Satellite"}
@@ -194,8 +194,8 @@ export const FarmLocationMap: React.FC<FarmLocationMapProps> = ({
           onClick={() => setMapType("terrain")}
           className={`px-2.5 py-1 rounded-lg transition-all ${
             mapType === "terrain"
-              ? "bg-emerald-700 text-white shadow-2xs"
-              : "hover:bg-stone-100 text-stone-600"
+              ? "bg-[#166534] text-white shadow-2xs"
+              : "hover:bg-[#F8FAF5] text-[#64748B]"
           }`}
         >
           {isHi ? "स्थलाकृति" : "Terrain"}
@@ -210,8 +210,8 @@ export const FarmLocationMap: React.FC<FarmLocationMapProps> = ({
       />
 
       {/* Legend Badge at bottom right */}
-      <div className="absolute bottom-3 right-3 z-[400] bg-stone-900/80 backdrop-blur-md text-stone-200 text-[10px] px-2.5 py-1 rounded-lg border border-stone-700/50 flex items-center gap-1.5 pointer-events-none">
-        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <div className="absolute bottom-3 right-3 z-[400] bg-[#163020]/90 backdrop-blur-md text-[#DCE8DD] text-[10px] px-2.5 py-1 rounded-lg border border-[#166534]/40 flex items-center gap-1.5 pointer-events-none">
+        <span className="w-2 h-2 rounded-full bg-[#22C55E] animate-pulse"></span>
         <span>{isHi ? "अनुमानित कृषि परिधि" : "Agro-Climatic Zone (8km)"}</span>
       </div>
     </div>

@@ -9,7 +9,6 @@ import {
   Building,
   Navigation,
   Globe2,
-  Sparkles,
   RefreshCw,
 } from "lucide-react";
 import { FarmLocation, Language } from "../types";
@@ -116,16 +115,16 @@ export const LocationStep: React.FC<LocationStepProps> = ({
 
   return (
     <div className="max-w-4xl mx-auto py-4 sm:py-6 px-3 sm:px-4" id="location-step-container">
-      <div className="bg-white rounded-3xl p-5 sm:p-8 border border-stone-200/80 shadow-lg relative overflow-hidden">
+      <div className="bg-white rounded-3xl p-5 sm:p-8 border border-[#DCE8DD] shadow-sm relative overflow-hidden">
         {/* Header Section */}
         <div className="text-center max-w-xl mx-auto mb-6">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-emerald-50 text-emerald-800 border border-emerald-200 mb-2">
-            <MapPin className="w-3.5 h-3.5 text-emerald-600" /> {t.steps.step3}
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-[#F8FAF5] text-[#166534] border border-[#DCE8DD] mb-2">
+            <MapPin className="w-3.5 h-3.5 text-[#22C55E]" /> {t.steps.step3}
           </span>
-          <h2 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight mb-1.5">
+          <h2 className="text-2xl sm:text-3xl font-black text-[#163020] tracking-tight mb-1.5">
             {t.location.title}
           </h2>
-          <p className="text-xs sm:text-sm text-stone-600">
+          <p className="text-xs sm:text-sm text-[#64748B]">
             {t.location.subtitle}
           </p>
         </div>
@@ -140,18 +139,18 @@ export const LocationStep: React.FC<LocationStepProps> = ({
               disabled={isDetecting}
               className={`flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all duration-200 cursor-pointer ${
                 isDetecting
-                  ? "border-emerald-500 bg-emerald-50/80 text-emerald-900"
-                  : "border-stone-200 hover:border-emerald-500 bg-stone-50 hover:bg-emerald-50/40 text-stone-800"
+                  ? "border-[#166534] bg-[#F8FAF5] text-[#163020]"
+                  : "border-[#DCE8DD] hover:border-[#166534] bg-[#F8FAF5] hover:bg-white text-[#163020]"
               }`}
               id="btn-use-my-location"
             >
-              <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-sm mb-2.5">
-                <Navigation className={`w-6 h-6 ${isDetecting ? "animate-spin" : ""}`} />
+              <div className="w-12 h-12 rounded-xl bg-[#166534] text-white flex items-center justify-center shadow-xs mb-2.5">
+                <Navigation className={`w-6 h-6 text-[#22C55E] ${isDetecting ? "animate-spin" : ""}`} />
               </div>
-              <span className="font-extrabold text-sm sm:text-base text-stone-900">
+              <span className="font-extrabold text-sm sm:text-base text-[#163020]">
                 [ 📍 {t.location.useMyLocation} ]
               </span>
-              <span className="text-[11px] text-stone-500 mt-1 text-center">
+              <span className="text-[11px] text-[#64748B] mt-1 text-center">
                 {isHi
                   ? "ब्राउज़र जीपीएस से स्वचालित पहचान करें व उपयुक्त फसलें देखें"
                   : "Detect GPS location and explore suitable crops"}
@@ -167,18 +166,18 @@ export const LocationStep: React.FC<LocationStepProps> = ({
               }}
               className={`flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all duration-200 cursor-pointer ${
                 locationMode === "manual"
-                  ? "border-emerald-600 bg-emerald-50/70 text-emerald-950 shadow-sm ring-2 ring-emerald-500/20"
-                  : "border-stone-200 hover:border-emerald-400 bg-stone-50 hover:bg-emerald-50/30 text-stone-800"
+                  ? "border-[#166534] bg-[#F8FAF5] text-[#163020] shadow-xs ring-2 ring-[#166534]/20"
+                  : "border-[#DCE8DD] hover:border-[#166534] bg-white hover:bg-[#F8FAF5] text-[#163020]"
               }`}
               id="btn-select-location-manually"
             >
-              <div className="w-12 h-12 rounded-xl bg-stone-800 text-white flex items-center justify-center shadow-sm mb-2.5">
-                <Building className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-xl bg-[#163020] text-white flex items-center justify-center shadow-xs mb-2.5">
+                <Building className="w-6 h-6 text-[#DCE8DD]" />
               </div>
-              <span className="font-extrabold text-sm sm:text-base text-stone-900">
+              <span className="font-extrabold text-sm sm:text-base text-[#163020]">
                 [ {t.location.selectManually} ]
               </span>
-              <span className="text-[11px] text-stone-500 mt-1 text-center">
+              <span className="text-[11px] text-[#64748B] mt-1 text-center">
                 {isHi
                   ? "राज्य और जिला सूची में से चुनें"
                   : "Select state & district from dropdown list"}
@@ -193,19 +192,19 @@ export const LocationStep: React.FC<LocationStepProps> = ({
             <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
             <div>
               <p className="font-bold">{isHi ? "स्थान अनुमति सूचना" : "Location Permission Notice"}</p>
-              <p className="mt-0.5 text-stone-600 leading-relaxed">{permissionError}</p>
+              <p className="mt-0.5 text-[#64748B] leading-relaxed">{permissionError}</p>
             </div>
           </div>
         )}
 
         {/* Detecting State Animation */}
         {isDetecting && (
-          <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-center mb-6">
-            <div className="inline-block animate-spin text-emerald-700 mb-2">
-              <Compass className="w-8 h-8" />
+          <div className="p-6 rounded-2xl bg-[#F8FAF5] border border-[#DCE8DD] text-center mb-6">
+            <div className="inline-block animate-spin text-[#166534] mb-2">
+              <Compass className="w-8 h-8 text-[#22C55E]" />
             </div>
-            <p className="text-sm font-bold text-emerald-900">{t.location.detectingLocation}</p>
-            <p className="text-xs text-stone-600 mt-1">
+            <p className="text-sm font-bold text-[#163020]">{t.location.detectingLocation}</p>
+            <p className="text-xs text-[#64748B] mt-1">
               {isHi
                 ? "कृषि-जलवायु क्षेत्र व उपयुक्त फसलों का विश्लेषण हो रहा है..."
                 : "Fetching regional agro-climatic data & crop recommendations..."}
@@ -215,16 +214,16 @@ export const LocationStep: React.FC<LocationStepProps> = ({
 
         {/* Manual State & District Dropdowns Selector */}
         {locationMode === "manual" && !isDetecting && (
-          <div className="bg-stone-50 rounded-2xl p-5 border border-stone-200 mb-6">
-            <h3 className="text-sm font-bold text-stone-900 mb-3.5 flex items-center gap-2">
-              <Globe2 className="w-4 h-4 text-emerald-700" />
+          <div className="bg-[#F8FAF5] rounded-2xl p-5 border border-[#DCE8DD] mb-6">
+            <h3 className="text-sm font-bold text-[#163020] mb-3.5 flex items-center gap-2">
+              <Globe2 className="w-4 h-4 text-[#166534]" />
               <span>{isHi ? "राज्य एवं जिला चुनें" : "Select State & District"}</span>
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               {/* State select */}
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1.5">
+                <label className="block text-xs font-bold text-[#163020] mb-1.5">
                   {t.location.selectState}
                 </label>
                 <select
@@ -237,7 +236,7 @@ export const LocationStep: React.FC<LocationStepProps> = ({
                       setSelectedDistrict(found.districts[0].name_en);
                     }
                   }}
-                  className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-white border border-[#DCE8DD] rounded-xl px-3.5 py-2.5 text-sm font-medium text-[#163020] focus:outline-none focus:ring-2 focus:ring-[#166534]"
                   id="select-state-dropdown"
                 >
                   {INDIAN_STATES_DATA.map((st) => (
@@ -250,13 +249,13 @@ export const LocationStep: React.FC<LocationStepProps> = ({
 
               {/* District select */}
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1.5">
+                <label className="block text-xs font-bold text-[#163020] mb-1.5">
                   {t.location.selectDistrict}
                 </label>
                 <select
                   value={selectedDistrict}
                   onChange={(e) => setSelectedDistrict(e.target.value)}
-                  className="w-full bg-white border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full bg-white border border-[#DCE8DD] rounded-xl px-3.5 py-2.5 text-sm font-medium text-[#163020] focus:outline-none focus:ring-2 focus:ring-[#166534]"
                   id="select-district-dropdown"
                 >
                   {currentStateObj.districts.map((dist) => (
@@ -271,10 +270,10 @@ export const LocationStep: React.FC<LocationStepProps> = ({
             <button
               type="button"
               onClick={handleSaveManualLocation}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-700 hover:bg-emerald-600 text-white shadow-sm transition-all cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#166534] hover:bg-[#14532d] text-white shadow-xs transition-all cursor-pointer"
               id="btn-apply-manual-location"
             >
-              <CheckCircle className="w-4 h-4" />
+              <CheckCircle className="w-4 h-4 text-[#22C55E]" />
               <span>{isHi ? "स्थान लागू करें एवं फसलें देखें" : "Apply Location & View Suitable Crops"}</span>
             </button>
           </div>
@@ -295,16 +294,16 @@ export const LocationStep: React.FC<LocationStepProps> = ({
         )}
 
         {/* Step 3 -> Step 4 Continue Button */}
-        <div className="pt-4 border-t border-stone-100 flex items-center justify-between gap-4">
-          <div className="text-xs text-stone-500 hidden sm:flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+        <div className="pt-4 border-t border-[#DCE8DD] flex items-center justify-between gap-4">
+          <div className="text-xs text-[#64748B] hidden sm:flex items-center gap-1.5">
+            <ShieldCheck className="w-4 h-4 text-[#22C55E]" />
             <span>{t.location.privacyNote}</span>
           </div>
 
           <button
             type="button"
             onClick={handleConfirmAndContinue}
-            className="w-full sm:w-auto ml-auto flex items-center justify-center gap-2 bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-3.5 px-8 rounded-2xl shadow-md transition-all active:scale-98 cursor-pointer"
+            className="w-full sm:w-auto ml-auto flex items-center justify-center gap-2 bg-[#166534] hover:bg-[#14532d] text-white font-bold py-3.5 px-8 rounded-2xl shadow-sm transition-all active:scale-98 cursor-pointer"
             id="btn-location-confirm-continue"
           >
             <span>{t.location.confirmAndContinue}</span>
