@@ -5,6 +5,7 @@ import { getLanguageInfo } from "../data/languages";
 import { getTranslation } from "../data/translations";
 import { LanguageModal } from "./LanguageModal";
 import { FaqModal } from "./FaqModal";
+import { PWAInstallButton } from "./PWAInstallButton";
 
 interface HeaderProps {
   language: Language;
@@ -104,6 +105,9 @@ export const Header: React.FC<HeaderProps> = ({
               <Phone className="w-3.5 h-3.5 text-[#22C55E]" />
               <span>{expertPhoneNumber}</span>
             </a>
+
+            {/* In-App Device PWA Install Button */}
+            <PWAInstallButton isHindi={language === "hi"} variant="header" />
 
             {/* Global Language Switcher Button */}
             <button

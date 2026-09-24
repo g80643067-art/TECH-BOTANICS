@@ -24,6 +24,8 @@ import { FloatingAiAgent } from "./components/FloatingAiAgent";
 import { ConfigModal } from "./components/ConfigModal";
 import { ReportModal } from "./components/ReportModal";
 import { CropHealthVoiceAssistant } from "./components/CropHealthVoiceAssistant";
+import { PWAInstallButton } from "./components/PWAInstallButton";
+import { OfflineIndicator } from "./components/OfflineIndicator";
 import { CropIssueData, FarmLocation, Language, SoilOption, StepNumber, VisionAnalysisResult } from "./types";
 import { SAMPLE_CROPS } from "./data/mockCrops";
 import { SOIL_OPTIONS } from "./data/soilTypes";
@@ -342,6 +344,12 @@ export default function App() {
           soilType={soilType}
         />
       )}
+
+      {/* PWA Device Installation Floating Banner */}
+      <PWAInstallButton isHindi={language === "hi"} variant="floating-banner" />
+
+      {/* Connectivity & Offline Status Indicator */}
+      <OfflineIndicator isHindi={language === "hi"} />
 
       {/* Minimal Footer */}
       <footer className="bg-[#163020] text-[#DCE8DD]/80 py-6 px-4 text-xs text-center border-t border-[#166534]/40">
