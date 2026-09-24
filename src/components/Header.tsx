@@ -7,6 +7,8 @@ import { LanguageModal } from "./LanguageModal";
 import { FaqModal } from "./FaqModal";
 import { PWAInstallButton } from "./PWAInstallButton";
 
+import { DashboardTab } from "./DashboardNav";
+
 interface HeaderProps {
   language: Language;
   onLanguageChange: (lang: Language) => void;
@@ -16,8 +18,8 @@ interface HeaderProps {
   onOpenConfig: () => void;
   onReset: () => void;
   onOpenAiAgent?: () => void;
-  activeSection?: "voice-assistant" | "pipeline";
-  onSelectSection?: (section: "voice-assistant" | "pipeline") => void;
+  activeTab?: DashboardTab;
+  onSelectTab?: (tab: DashboardTab) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -29,8 +31,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenConfig,
   onReset,
   onOpenAiAgent,
-  activeSection,
-  onSelectSection,
+  activeTab,
+  onSelectTab,
 }) => {
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showFaqModal, setShowFaqModal] = useState(false);
@@ -44,8 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Brand Logo & Name */}
           <div
             onClick={() => {
-              if (onSelectSection) onSelectSection("voice-assistant");
-              onNavigateStep(1);
+              if (onSelectTab) onSelectTab("overview");
             }}
             className="flex items-center gap-3 cursor-pointer group select-none"
             id="brand-logo-button"
@@ -59,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({
                   {t.appName}
                 </span>
                 <span className="hidden sm:inline-flex items-center text-[11px] font-semibold tracking-wide bg-[#F8FAF5] text-[#166534] px-2 py-0.5 rounded-full border border-[#DCE8DD]">
-                  AI Guided
+                  AI Agro Hub
                 </span>
               </div>
               <p className="text-xs text-[#64748B] font-medium line-clamp-1">
@@ -70,17 +71,15 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Action Controls */}
           <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* Crop Health Voice AI Quick Switcher */}
-            {onSelectSection && (
+            {/* Quick Voice Doctor Trigger */}
+            {onSelectTab && (
               <button
                 type="button"
                 onClick={() =>
-                  onSelectSection(
-                    activeSection === "voice-assistant" ? "pipeline" : "voice-assistant"
-                  )
+                  onSelectTab(activeTab === "voice-doctor" ? "overview" : "voice-doctor")
                 }
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer ${
-                  activeSection === "voice-assistant"
+                  activeTab === "voice-doctor"
                     ? "bg-[#166534] text-white border-[#166534] shadow-xs"
                     : "bg-[#F8FAF5] hover:bg-white text-[#163020] border-[#DCE8DD] hover:border-[#22C55E]"
                 }`}
@@ -88,13 +87,14 @@ export const Header: React.FC<HeaderProps> = ({
                 id="header-voice-assistant-toggle"
               >
                 <span>🎙️</span>
-                <span className="hidden sm:inline">फसल हेल्थ AI</span>
+                <span className="hidden sm:inline">वॉइस डॉक्टर</span>
                 <span className="sm:hidden">वॉइस AI</span>
-                {activeSection === "voice-assistant" && (
+                {activeTab === "voice-doctor" && (
                   <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse"></span>
                 )}
               </button>
             )}
+
             {/* Helpline Quick Badge */}
             <a
               href={`tel:${expertPhoneNumber.replace(/\s+/g, "")}`}

@@ -3,13 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Header } from "./components/Header";
+import { DashboardNav, DashboardTab } from "./components/DashboardNav";
+import { DashboardOverview } from "./components/DashboardOverview";
+import { SoilNutrientDashboard } from "./components/SoilNutrientDashboard";
+import { MandiMarketDashboard } from "./components/MandiMarketDashboard";
+import { KisanHelplineSection } from "./components/KisanHelplineSection";
+import { PrescriptionReportsSection } from "./components/PrescriptionReportsSection";
 import { JourneyIndicator } from "./components/JourneyIndicator";
 import { JourneyVisualFlow } from "./components/JourneyVisualFlow";
 import { LanguageStep } from "./components/LanguageStep";
@@ -32,8 +33,8 @@ import { SOIL_OPTIONS } from "./data/soilTypes";
 import { INDIAN_STATES_DATA, buildManualFarmLocation } from "./data/locations";
 
 export default function App() {
-  // Navigation Mode: "voice-assistant" (Fasal Health Check with AI Female Voice) or "pipeline" (7-Step Journey)
-  const [activeSection, setActiveSection] = useState<"voice-assistant" | "pipeline">("voice-assistant");
+  // Professional Section-Wise Dashboard Navigation
+  const [activeTab, setActiveTab] = useState<DashboardTab>("overview");
 
   // Session State
   const [language, setLanguage] = useState<Language>("hi");
@@ -117,7 +118,7 @@ export default function App() {
 
   // Step Navigation Jump
   const handleNavigateStep = (step: StepNumber) => {
-    setActiveSection("pipeline");
+    setActiveTab("scanner");
     setCurrentStep(step);
   };
 
@@ -133,7 +134,7 @@ export default function App() {
     if (matched) {
       setDetectedCrop(matched);
     }
-    setActiveSection("pipeline");
+    setActiveTab("scanner");
     setCurrentStep(3); // proceed to location & soil customization
   };
 
@@ -149,54 +150,43 @@ export default function App() {
         onOpenConfig={() => setIsConfigOpen(true)}
         onReset={handleResetSession}
         onOpenAiAgent={() => setIsAiAgentOpen(true)}
-        activeSection={activeSection}
-        onSelectSection={setActiveSection}
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
       />
 
-      {/* Mode Selector Pill Bar */}
-      <div className="w-full max-w-6xl mx-auto px-4 pt-4 pb-1 flex items-center justify-center">
-        <div className="inline-flex p-1.5 rounded-2xl bg-white border border-[#DCE8DD] shadow-2xs">
-          <button
-            onClick={() => setActiveSection("voice-assistant")}
-            className={`flex items-center gap-2 px-4 sm:px-6 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
-              activeSection === "voice-assistant"
-                ? "bg-[#166534] text-white shadow-xs"
-                : "text-[#163020] hover:bg-[#F8FAF5]"
-            }`}
-            id="tab-voice-assistant"
-          >
-            <span>🎙️ फसल हेल्थ AI (वॉइस असिस्टेंट)</span>
-            <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] bg-[#22C55E] text-white font-bold">
-              NEW
-            </span>
-          </button>
-          <button
-            onClick={() => setActiveSection("pipeline")}
-            className={`flex items-center gap-2 px-4 sm:px-6 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
-              activeSection === "pipeline"
-                ? "bg-[#166534] text-white shadow-xs"
-                : "text-[#163020] hover:bg-[#F8FAF5]"
-            }`}
-            id="tab-farm-pipeline"
-          >
-            <span>🌾 संपूर्ण कृषि यात्रा (7-Step Journey)</span>
-          </button>
-        </div>
-      </div>
+      {/* Section-Wise Dashboard Navigation Bar */}
+      <DashboardNav
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
+        language={language}
+      />
 
-      {/* Main Centered Content Container */}
+      {/* Main Content Workspace Container */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 flex flex-col justify-start">
-        {/* SECTION 1: AI-POWERED CROP HEALTH VOICE ASSISTANT */}
-        {activeSection === "voice-assistant" && (
-          <CropHealthVoiceAssistant
-            onContinueToFullAdvisory={handleContinueFromVoiceToAdvisory}
-            expertPhoneNumber={expertPhoneNumber}
+        {/* SECTION 1: OVERVIEW DASHBOARD */}
+        {activeTab === "overview" && (
+          <DashboardOverview
+            language={language}
+            onNavigateTab={setActiveTab}
+            onStartScan={() => {
+              setActiveTab("scanner");
+              setCurrentStep(2);
+            }}
+            onSelectCropIssue={(crop) => {
+              setDetectedCrop(crop);
+              setActiveTab("scanner");
+              setCurrentStep(5);
+            }}
+            detectedCrop={detectedCrop}
+            location={location}
+            soilType={soilType}
+            onOpenReportModal={() => setIsReportOpen(true)}
           />
         )}
 
-        {/* SECTION 2: 7-STEP COMPREHENSIVE ADVISORY PIPELINE */}
-        {activeSection === "pipeline" && (
-          <>
+        {/* SECTION 2: 7-STEP AI CROP SCANNER JOURNEY */}
+        {activeTab === "scanner" && (
+          <div className="space-y-4">
             {/* 7-Step Interactive Pipeline Breadcrumb Indicator */}
             <JourneyIndicator
               language={language}
@@ -214,97 +204,149 @@ export default function App() {
               />
             )}
 
-        {/* Step 1: Language Selection */}
-        {currentStep === 1 && (
-          <LanguageStep
-            currentLanguage={language}
-            onSelectLanguage={handleSelectLanguage}
-          />
-        )}
+            {/* Step 1: Language Selection */}
+            {currentStep === 1 && (
+              <LanguageStep
+                currentLanguage={language}
+                onSelectLanguage={handleSelectLanguage}
+              />
+            )}
 
-        {/* Step 2: Crop Scanner */}
-        {currentStep === 2 && (
-          <ScannerStep
-            language={language}
-            onScanComplete={handleScanComplete}
-            savedImage={cropImage}
-            savedCrop={detectedCrop}
-            location={location}
-            soilType={soilType}
-            onAskAiQuery={handleAskAiQuery}
-            onOpenAiAgent={() => setIsAiAgentOpen(true)}
-          />
-        )}
+            {/* Step 2: Crop Scanner */}
+            {currentStep === 2 && (
+              <ScannerStep
+                language={language}
+                onScanComplete={handleScanComplete}
+                savedImage={cropImage}
+                savedCrop={detectedCrop}
+                location={location}
+                soilType={soilType}
+                onAskAiQuery={handleAskAiQuery}
+                onOpenAiAgent={() => setIsAiAgentOpen(true)}
+              />
+            )}
 
-        {/* Step 3: Location */}
-        {currentStep === 3 && (
-          <LocationStep
-            language={language}
-            onLocationSelected={handleLocationSelected}
-            savedLocation={location}
-            onAskAiQuery={handleAskAiQuery}
-          />
-        )}
+            {/* Step 3: Location */}
+            {currentStep === 3 && (
+              <LocationStep
+                language={language}
+                onLocationSelected={handleLocationSelected}
+                savedLocation={location}
+                onAskAiQuery={handleAskAiQuery}
+              />
+            )}
 
-        {/* Step 4: Soil Type */}
-        {currentStep === 4 && (
-          <SoilStep
-            language={language}
-            onSoilSelected={handleSoilSelected}
-            savedSoil={soilType}
-          />
-        )}
+            {/* Step 4: Soil Type */}
+            {currentStep === 4 && (
+              <SoilStep
+                language={language}
+                onSoilSelected={handleSoilSelected}
+                savedSoil={soilType}
+              />
+            )}
 
-        {/* Step 5: Issue Detection */}
-        {currentStep === 5 && detectedCrop && (
-          <DetectionStep
-            language={language}
-            cropData={detectedCrop}
-            cropImage={cropImage}
-            location={location}
-            soilType={soilType}
-            visionResult={visionResult}
-            onContinueToResolution={handleContinueToResolution}
-          />
-        )}
-
-        {/* Step 6: Problem Resolution */}
-        {currentStep === 6 && detectedCrop && (
-          <ResolutionStep
-            language={language}
-            cropData={detectedCrop}
-            onSelectResolved={handleSelectResolvedYes}
-            onSelectNotResolved={handleSelectResolvedNo}
-            onOpenAiAgent={() => setIsAiAgentOpen(true)}
-          />
-        )}
-
-        {/* Step 7: Resolved (Success) OR Unresolved (Contact Expert) */}
-        {currentStep === 7 && detectedCrop && (
-          <>
-            {resolutionOutcome === "unresolved" ? (
-              <EscalationStep
+            {/* Step 5: Issue Detection */}
+            {currentStep === 5 && detectedCrop && (
+              <DetectionStep
                 language={language}
                 cropData={detectedCrop}
                 cropImage={cropImage}
                 location={location}
                 soilType={soilType}
-                expertPhoneNumber={expertPhoneNumber}
-                onScanAgain={handleResetSession}
-              />
-            ) : (
-              <SuccessStep
-                language={language}
-                cropData={detectedCrop}
-                location={location}
-                soilType={soilType}
-                onScanAgain={handleResetSession}
-                onOpenReportModal={() => setIsReportOpen(true)}
+                visionResult={visionResult}
+                onContinueToResolution={handleContinueToResolution}
               />
             )}
-          </>
+
+            {/* Step 6: Problem Resolution */}
+            {currentStep === 6 && detectedCrop && (
+              <ResolutionStep
+                language={language}
+                cropData={detectedCrop}
+                onSelectResolved={handleSelectResolvedYes}
+                onSelectNotResolved={handleSelectResolvedNo}
+                onOpenAiAgent={() => setIsAiAgentOpen(true)}
+              />
+            )}
+
+            {/* Step 7: Resolved (Success) OR Unresolved (Contact Expert) */}
+            {currentStep === 7 && detectedCrop && (
+              <>
+                {resolutionOutcome === "unresolved" ? (
+                  <EscalationStep
+                    language={language}
+                    cropData={detectedCrop}
+                    cropImage={cropImage}
+                    location={location}
+                    soilType={soilType}
+                    expertPhoneNumber={expertPhoneNumber}
+                    onScanAgain={handleResetSession}
+                  />
+                ) : (
+                  <SuccessStep
+                    language={language}
+                    cropData={detectedCrop}
+                    location={location}
+                    soilType={soilType}
+                    onScanAgain={handleResetSession}
+                    onOpenReportModal={() => setIsReportOpen(true)}
+                  />
+                )}
+              </>
+            )}
+          </div>
         )}
-          </>
+
+        {/* SECTION 3: VOICE AGRO-DOCTOR ASSISTANT */}
+        {activeTab === "voice-doctor" && (
+          <CropHealthVoiceAssistant
+            onContinueToFullAdvisory={handleContinueFromVoiceToAdvisory}
+            expertPhoneNumber={expertPhoneNumber}
+          />
+        )}
+
+        {/* SECTION 4: SOIL & NUTRIENT PLANNER */}
+        {activeTab === "soil-health" && (
+          <SoilNutrientDashboard
+            language={language}
+            selectedSoil={soilType}
+            onSelectSoil={setSoilType}
+            onContinueToScan={() => {
+              setActiveTab("scanner");
+              setCurrentStep(2);
+            }}
+          />
+        )}
+
+        {/* SECTION 5: LIVE MANDI RATES */}
+        {activeTab === "mandi-rates" && (
+          <MandiMarketDashboard language={language} />
+        )}
+
+        {/* SECTION 6: KISAN HELPLINE & KVK EXPERT */}
+        {activeTab === "kisan-helpline" && (
+          <KisanHelplineSection
+            language={language}
+            expertPhoneNumber={expertPhoneNumber}
+            detectedCrop={detectedCrop}
+            location={location}
+          />
+        )}
+
+        {/* SECTION 7: PRESCRIPTION & REPORT CERTIFICATES */}
+        {activeTab === "reports" && (
+          <PrescriptionReportsSection
+            language={language}
+            detectedCrop={detectedCrop}
+            location={location}
+            soilType={soilType}
+            cropImage={cropImage}
+            onOpenReportModal={() => setIsReportOpen(true)}
+            onNavigateToScanner={() => {
+              setActiveTab("scanner");
+              setCurrentStep(2);
+            }}
+          />
         )}
       </main>
 
@@ -356,12 +398,12 @@ export default function App() {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="font-extrabold text-white tracking-wide">KRISHISETU AI</span>
-            <span className="text-[#22C55E]">•</span>
-            <span>{language === "hi" ? "किसान-प्रथम सरल फसल निदान प्रणाली" : "Farmer-First Guided Agricultural Intelligence"}</span>
+            <span className="text-[#22C55E]">·</span>
+            <span>{language === "hi" ? "किसान-प्रथम डिजिटल कृषि परामर्श एवं फसल सुरक्षा" : "Farmer-First Guided Agricultural Intelligence"}</span>
           </div>
           <div className="flex items-center gap-4 text-[#DCE8DD]/70">
             <span>Kisan Call Center: 1800-180-1551</span>
-            <span>•</span>
+            <span>·</span>
             <button
               onClick={() => setIsConfigOpen(true)}
               className="text-[#DCE8DD] hover:text-white underline decoration-[#22C55E]/60 hover:decoration-[#22C55E] transition-colors cursor-pointer"
@@ -374,4 +416,3 @@ export default function App() {
     </div>
   );
 }
-
